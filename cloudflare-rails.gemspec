@@ -27,7 +27,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "webmock"
 
   # TODO - no idea if this is 4.x specific, should test with older versions
-  spec.add_dependency "rails", ">= 4.0"
+  spec.add_dependency "rails", "~> 4.0"
   spec.add_dependency 'httparty'
 
   # we need Module#prepend
