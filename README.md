@@ -34,6 +34,10 @@ config.cloudflare.expires_in = 12.hours # default value
 config.cloudfalre.timeout = 5.seconds # default value
 ```
 
+## Alternatives
+
+[actionpack-cloudflare](https://github.com/customink/actionpack-cloudflare) simpler approach using the `CF-Connecting-IP` header. 
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
