@@ -2,6 +2,11 @@
 
 This gem correctly configures Rails for [CloudFlare](https://www.cloudflare.com) so that `request.remote_ip` / `request.ip` both work correctly.
 
+## Rails Compatibility
+
+For Rails 5, use 0.2.x
+For Rails 4.2, use 0.1.x
+
 ## Installation
 
 Add this line to your application's `Gemfile`:

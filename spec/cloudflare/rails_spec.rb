@@ -35,7 +35,7 @@ describe Cloudflare::Rails do
 198.41.128.0/17
 199.27.128.0/21
 EOM
-}
+    }
     let(:ips_v6_body) {
       <<EOM
 2400:cb00::/32
@@ -116,7 +116,7 @@ EOM
 
         rails_app.initialize!
         rails_app.routes.draw do
-          get "/" => "foo#index"
+          root to: "foo#index", format: 'json'
         end
       end
 
@@ -178,27 +178,37 @@ EOM
           end
         end
 
-        describe "##{m}" do
+        describe "##{m}", type: :controller do
+          controller do
+            def index
+              render status: 200, json: {ip: request.ip, remote_ip: request.remote_ip}
+            end
+          end
+
           it "works with a cloudflare ip" do
-            get "/", {format: :json}, cf_env
+            request.env.merge! cf_env
+            get :index
             expect(response).to have_http_status(:ok)
             expect(JSON[response.body]["#{m}"]).to eq(base_ip)
           end
 
           it "works with a non-cloudflare ip" do
-            get "/", {format: :json}, non_cf_env
+            request.env.merge! non_cf_env
+            get :index
             expect(response).to have_http_status(:ok)
             expect(JSON[response.body]["#{m}"]).to eq(non_cf_ip)
           end
 
           it 'works with a cloudflare ip and a local proxy' do
-            get "/", {format: :json}, cf_proxy_env
+            request.env.merge! cf_proxy_env
+            get :index
             expect(response).to have_http_status(:ok)
             expect(JSON[response.body]["#{m}"]).to eq(base_ip)
           end
 
           it 'works with a non-cloudflare ip and a local proxy' do
-            get "/", {format: :json}, non_cf_proxy_env
+            request.env.merge! non_cf_proxy_env
+            get :index
             expect(response).to have_http_status(:ok)
             expect(JSON[response.body]["#{m}"]).to eq(non_cf_ip)
           end
