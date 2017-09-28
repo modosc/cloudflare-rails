@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.summary       = "This gem configures Rails for CloudFlare so that request.ip and request.remote_ip and work correctly."
   spec.description   = ""
   spec.homepage      = "https://github.com/modosc/cloudflare-rails"
-
+  spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.bindir        = "exe"
