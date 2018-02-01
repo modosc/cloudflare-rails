@@ -31,7 +31,7 @@ This code will fetch CloudFlare's current [IPv4](https://www.cloudflare.com/ips-
 You can configure the HTTP `timeout` and `expires_in` cache parameters inside of your rails config:
 ```
 config.cloudflare.expires_in = 12.hours # default value
-config.cloudfalre.timeout = 5.seconds # default value
+config.cloudflare.timeout = 5.seconds # default value
 ```
 
 ## Alternatives
