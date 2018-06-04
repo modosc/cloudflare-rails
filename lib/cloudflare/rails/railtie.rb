@@ -3,12 +3,11 @@ require "httparty"
 module Cloudflare
   module Rails
     class Railtie < ::Rails::Railtie
-
       # patch rack::request::helpers to use our cloudflare ips - this way request.ip is
       # correct inside of rack and rails
       module CheckTrustedProxies
         def trusted_proxy?(ip)
-          ::Rails.application.config.cloudflare.ips.any?{ |proxy| proxy === ip } || super
+          ::Rails.application.config.cloudflare.ips.any? { |proxy| proxy === ip } || super
         end
       end
 
@@ -17,7 +16,6 @@ module Cloudflare
       # patch ActionDispatch::RemoteIP to use our cloudflare ips - this way
       # request.remote_ip is correct inside of rails
       module RemoteIpProxies
-
         def proxies
           super + ::Rails.application.config.cloudflare.ips
         end
@@ -33,8 +31,8 @@ module Cloudflare
 
         class ResponseError < HTTParty::ResponseError; end
 
-        IPS_V4_URL = '/ips-v4'
-        IPS_V6_URL = '/ips-v6'
+        IPS_V4_URL = '/ips-v4'.freeze
+        IPS_V6_URL = '/ips-v6'.freeze
 
         class << self
           def ips_v6
@@ -48,19 +46,17 @@ module Cloudflare
           def fetch(url)
             resp = get url, timeout: ::Rails.application.config.cloudflare.timeout
             if resp.success?
-              resp.body.split("\n").reject(&:blank?).map{|ip| IPAddr.new ip}
+              resp.body.split("\n").reject(&:blank?).map { |ip| IPAddr.new ip }
             else
-              raise ResponseError.new(resp.response)
+              raise ResponseError, resp.response
             end
           end
 
           def fetch_with_cache(type)
             ::Rails.cache.fetch("cloudflare-rails:#{type}", expires_in: ::Rails.application.config.cloudflare.expires_in) do
-              self.send type
+              send type
             end
           end
-
-
         end
       end
 
@@ -68,8 +64,8 @@ module Cloudflare
       DEFAULTS = {
         expires_in: 12.hours,
         timeout: 5.seconds,
-        ips: Array.new
-      }
+        ips: [],
+      }.freeze
 
       config.before_configuration do |app|
         app.config.cloudflare = ActiveSupport::OrderedOptions.new
@@ -89,7 +85,6 @@ module Cloudflare
             ::Rails.logger.error "Cloudflare::Rails: Got exception: #{e} for type:#{type}"
           end
         end
-
       end
     end
   end

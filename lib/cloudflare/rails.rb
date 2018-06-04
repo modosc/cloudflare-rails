@@ -3,8 +3,6 @@ require "httparty"
 
 module Cloudflare
   module Rails
-  
-
   end
 end
 
