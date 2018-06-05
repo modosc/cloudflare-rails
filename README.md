@@ -1,5 +1,4 @@
-# Cloudflare::Rails [![Gem Version](https://badge.fury.io/rb/cloudflare-rails.svg)](https://badge.fury.io/rb/cloudflare-rails)
-
+# Cloudflare::Rails [![Gem Version](https://badge.fury.io/rb/cloudflare-rails.svg)](https://badge.fury.io/rb/cloudflare-rails) [![CircleCI](https://circleci.com/gh/modosc/cloudflare-rails/tree/master.svg?style=shield)](https://circleci.com/gh/modosc/cloudflare-rails/tree/master)
 This gem correctly configures Rails for [CloudFlare](https://www.cloudflare.com) so that `request.remote_ip` / `request.ip` both work correctly.
 
 ## Rails Compatibility
