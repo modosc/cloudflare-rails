@@ -25,7 +25,7 @@ And then execute:
 
 ## Usage
 
-This code will fetch CloudFlare's current [IPv4](https://www.cloudflare.com/ips-v4) and [IPv6](https://www.cloudflare.com/ips-v6) lists, store them in `Rails.cache`, and add them to `config.cloudflare.ips`.
+This code will fetch CloudFlare's current [IPv4](https://www.cloudflare.com/ips-v4) and [IPv6](https://www.cloudflare.com/ips-v6) lists, store them in `Rails.cache`, and add them to `config.cloudflare.ips`. The `CF-Connecting-IP` header will then be trusted only from those ip addresses.
 
 You can configure the HTTP `timeout` and `expires_in` cache parameters inside of your rails config:
 ```
