@@ -81,7 +81,7 @@ module Cloudflare
             ::Rails.application.config.cloudflare.ips += Importer.fetch_with_cache(type)
           rescue Importer::ResponseError => e
             ::Rails.logger.error "Cloudflare::Rails: Couldn't import #{type} blocks from CloudFlare: #{e.response}"
-          rescue => e
+          rescue StandardError => e
             ::Rails.logger.error "Cloudflare::Rails: Got exception: #{e} for type:#{type}"
           end
         end
