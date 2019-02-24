@@ -11,7 +11,7 @@ module Cloudflare
         end
       end
 
-      Rack::Request::Helpers.prepend CheckTrustedProxies
+      Rack::Request.prepend CheckTrustedProxies
 
       # patch ActionDispatch::RemoteIP to use our cloudflare ips - this way
       # request.remote_ip is correct inside of rails
