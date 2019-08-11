@@ -1,2 +1,4 @@
---format p
+--format d
 --color
+--format RspecJunitFormatter
+--out tmp/rspec/rspec<%= ENV["RACK_ATTACK"]  ? '-rack-attack' : '' %>.xml

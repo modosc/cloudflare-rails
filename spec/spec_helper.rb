@@ -3,15 +3,22 @@ $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 
 ENV["RAILS_ENV"] ||= 'test'
 
-require 'rubygems'
+require 'bundler/setup'
+Bundler.setup
 
+require 'rubygems'
+require 'pry'
 # Only the parts of rails we want to use
 require "action_controller/railtie"
 require 'action_view/railtie'
 require "rails/test_unit/railtie"
 
-require 'cloudflare/rails'
+if ENV['RACK_ATTACK']
+  # pull in rack/attack to make sure patches work with it
+  require 'rack/attack'
+end
 
+require 'cloudflare/rails'
 require 'rspec/rails'
 require 'webmock/rspec'
 

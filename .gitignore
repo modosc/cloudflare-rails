@@ -10,3 +10,4 @@
 /log/
 .ruby-gemset
 .ruby-version
+.DS_Store
