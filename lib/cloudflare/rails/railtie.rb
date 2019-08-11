@@ -11,7 +11,14 @@ module Cloudflare
         end
       end
 
-      Rack::Request.prepend CheckTrustedProxies
+      Rack::Request::Helpers.prepend CheckTrustedProxies
+
+      # rack-attack Rack::Request before the above is run, so if rack-attack is loaded we need to
+      # prepend our module there as well, see:
+      # https://github.com/kickstarter/rack-attack/blob/4fc4d79c9d2697ec21263109af23f11ea93a23ce/lib/rack/attack/request.rb
+      if defined? Rack::Attack::Request
+        Rack::Attack::Request.prepend CheckTrustedProxies
+      end
 
       # patch ActionDispatch::RemoteIP to use our cloudflare ips - this way
       # request.remote_ip is correct inside of rails

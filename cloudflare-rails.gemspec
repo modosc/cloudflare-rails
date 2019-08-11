@@ -27,6 +27,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec", "~> 3.8.0"
   spec.add_development_dependency "rubocop-airbnb", "~> 2.0.0"
   spec.add_development_dependency "webmock", "~> 3.6.0"
+  spec.add_development_dependency "rack-attack", "~> 6.1.0"
+  spec.add_development_dependency "rack-test"
+  spec.add_development_dependency "pry-byebug"
 
   spec.add_dependency "httparty"
   spec.add_dependency "rails", "~> 5.0"
