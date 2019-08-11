@@ -13,6 +13,7 @@ describe Cloudflare::Rails do
           config.active_support.deprecation = :stderr
           config.eager_load = false
           config.cache_store = :null_store
+          config.action_dispatch.return_only_media_type_on_content_type = false
           config.secret_key_base = SecureRandom.hex
           if ENV['RACK_ATTACK']
             config.middleware.use Rack::Attack
@@ -154,7 +155,7 @@ describe Cloudflare::Rails do
           remote_ip = nil
           env = Rack::MockRequest.env_for("/").merge(env).merge!(
             'action_dispatch.show_exceptions' => false,
-            'action_dispatch.key_generator'   => ActiveSupport::LegacyKeyGenerator.new('b3c631c314c0bbca50c1b2843150fe33')
+            'action_dispatch.key_generator'   => ActiveSupport::KeyGenerator.new('b3c631c314c0bbca50c1b2843150fe33')
           )
 
           endpoint = Proc.new do |e|
@@ -171,7 +172,7 @@ describe Cloudflare::Rails do
           ip = nil
           env = Rack::MockRequest.env_for("/").merge(env).merge!(
             'action_dispatch.show_exceptions' => false,
-            'action_dispatch.key_generator'   => ActiveSupport::LegacyKeyGenerator.new('b3c631c314c0bbca50c1b2843150fe33')
+            'action_dispatch.key_generator'   => ActiveSupport::KeyGenerator.new('b3c631c314c0bbca50c1b2843150fe33')
           )
 
           endpoint = Proc.new do |e|

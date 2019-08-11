@@ -17,7 +17,7 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "cloudflare-rails.gemspec" }}
+          - v1-dependencies-{{ checksum "cloudflare-rails.gemspec" }}-{{ checksum "Appraisals" }}
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
@@ -26,16 +26,21 @@ jobs:
           command: |
             bundle install --jobs=4 --retry=3 --path vendor/bundle
 
+      - run:
+          name: install appraisal versions
+          command: |
+            bundle exec appraisal install
+
       - save_cache:
           paths:
             - ./vendor/bundle
-          key: v1-dependencies-{{ checksum "Gemfile.lock" }}
+          key: v1-dependencies-{{ checksum "cloudflare-rails.gemspec" }}-{{ checksum "Appraisals" }}
 
       # run tests!
       - run:
           name: run tests
           command: |
-            bundle exec rake
+            bundle exec appraisal rake
       # collect reports
       - store_test_results:
           path: tmp/rspec

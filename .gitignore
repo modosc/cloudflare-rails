@@ -11,3 +11,5 @@
 .ruby-gemset
 .ruby-version
 .DS_Store
+
+*.gemfile.lock
