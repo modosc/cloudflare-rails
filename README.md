@@ -3,7 +3,7 @@ This gem correctly configures Rails for [CloudFlare](https://www.cloudflare.com)
 
 ## Rails Compatibility
 
-For Rails 5, use >= `0.2.x`
+For Rails 5 / 6, use >= `0.6.x`
 
 For Rails 4.2, use `0.1.x`
 
