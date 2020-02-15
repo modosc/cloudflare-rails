@@ -20,14 +20,14 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_development_dependency "bundler", "~> 1.10"
-  spec.add_development_dependency "rake", "~> 12.3.1"
+  spec.add_development_dependency "bundler", "~> 2.1.2"
+  spec.add_development_dependency "rake", "~> 13.0.1"
   spec.add_development_dependency "rspec_junit_formatter", "~> 0.4.1"
-  spec.add_development_dependency "rspec-rails", "~> 3.8.2"
-  spec.add_development_dependency "rspec", "~> 3.8.0"
-  spec.add_development_dependency "rubocop-airbnb", "~> 2.0.0"
-  spec.add_development_dependency "webmock", "~> 3.6.0"
-  spec.add_development_dependency "rack-attack", "~> 6.1.0"
+  spec.add_development_dependency "rspec-rails", "~> 3.9.0"
+  spec.add_development_dependency "rspec", "~> 3.9.0"
+  spec.add_development_dependency "rubocop-airbnb", "~> 3.0.2"
+  spec.add_development_dependency "webmock", "~> 3.8.0"
+  spec.add_development_dependency "rack-attack", "~> 6.2.2"
   spec.add_development_dependency "pry-byebug"
   spec.add_development_dependency "appraisal"
 

@@ -123,19 +123,23 @@ describe Cloudflare::Rails do
         let(:cf_env) {{
           "HTTP_X_FORWARDED_FOR" => "#{base_ip}, #{cf_ip}",
           'REMOTE_ADDR' => cf_ip,
-        }}
+        }
+        }
         let(:non_cf_env) {{
           "HTTP_X_FORWARDED_FOR" => "#{base_ip}, #{non_cf_ip}",
           'REMOTE_ADDR' => non_cf_ip,
-        }}
+        }
+        }
         let(:cf_proxy_env) {{
           "HTTP_X_FORWARDED_FOR" => "#{base_ip}, #{cf_ip}, 127.0.0.1",
           'REMOTE_ADDR' => "127.0.0.1",
-        }}
+        }
+        }
         let(:non_cf_proxy_env) {{
           "HTTP_X_FORWARDED_FOR" => "#{base_ip}, #{non_cf_ip}, 127.0.0.1",
           'REMOTE_ADDR' => "127.0.0.1",
-        }}
+        }
+        }
 
         before(:each) do
           class FooController < ActionController::Base
@@ -155,7 +159,7 @@ describe Cloudflare::Rails do
           remote_ip = nil
           env = Rack::MockRequest.env_for("/").merge(env).merge!(
             'action_dispatch.show_exceptions' => false,
-            'action_dispatch.key_generator'   => ActiveSupport::KeyGenerator.new('b3c631c314c0bbca50c1b2843150fe33')
+            'action_dispatch.key_generator' => ActiveSupport::KeyGenerator.new('b3c631c314c0bbca50c1b2843150fe33')
           )
 
           endpoint = Proc.new do |e|
@@ -172,7 +176,7 @@ describe Cloudflare::Rails do
           ip = nil
           env = Rack::MockRequest.env_for("/").merge(env).merge!(
             'action_dispatch.show_exceptions' => false,
-            'action_dispatch.key_generator'   => ActiveSupport::KeyGenerator.new('b3c631c314c0bbca50c1b2843150fe33')
+            'action_dispatch.key_generator' => ActiveSupport::KeyGenerator.new('b3c631c314c0bbca50c1b2843150fe33')
           )
 
           endpoint = Proc.new do |e|
