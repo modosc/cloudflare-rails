@@ -33,7 +33,7 @@ Using Cloudflare means it's hard to identify the IP address of incoming requests
 This code will fetch CloudFlare's current [IPv4](https://www.cloudflare.com/ips-v4) and [IPv6](https://www.cloudflare.com/ips-v6) lists, store them in `Rails.cache`, and add them to `config.cloudflare.ips`. The `X-Forwarded-For` header will then be trusted only from those ip addresses. 
 
 You can configure the HTTP `timeout` and `expires_in` cache parameters inside of your rails config:
-```
+```ruby
 config.cloudflare.expires_in = 12.hours # default value
 config.cloudflare.timeout = 5.seconds # default value
 ```
