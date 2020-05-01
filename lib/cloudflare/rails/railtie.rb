@@ -7,7 +7,10 @@ module Cloudflare
       # correct inside of rack and rails
       module CheckTrustedProxies
         def trusted_proxy?(ip)
-          ::Rails.application.config.cloudflare.ips.any? { |proxy| proxy === ip } || super
+          cloudflare_config = ::Rails.application.config.cloudflare
+          permitted_ips = cloudflare_config.ips + cloudflare_config.white_listed_ips
+
+          permitted_ips.any? { |proxy| proxy === ip } || super
         end
       end
 
@@ -72,6 +75,7 @@ module Cloudflare
         expires_in: 12.hours,
         timeout: 5.seconds,
         ips: [],
+        white_listed_ips: []
       }.freeze
 
       config.before_configuration do |app|
