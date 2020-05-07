@@ -89,7 +89,7 @@ module Cloudflare
           rescue Importer::ResponseError => e
             ::Rails.logger.error "Cloudflare::Rails: Couldn't import #{type} blocks from CloudFlare: #{e.response}"
           rescue StandardError => e
-            ::Rails.logger.error "Cloudflare::Rails: Got exception: #{e} for type:#{type}"
+            ::Rails.logger.error "Cloudflare::Rails: Got exception: #{e} for type: #{type}"
           end
         end
       end
