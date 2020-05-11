@@ -43,11 +43,19 @@ module Cloudflare
 
         class << self
           def ips_v6
-            fetch IPS_V6_URL
+            if ::Rails.application.config.cloudflare.ips_v6_file_path.present?
+              fetch_file(::Rails.application.config.cloudflare.ips_v6_file_path)
+            else
+              fetch IPS_V6_URL
+            end
           end
 
           def ips_v4
-            fetch IPS_V4_URL
+            if ::Rails.application.config.cloudflare.ips_v4_file_path.present?
+              fetch_file(::Rails.application.config.cloudflare.ips_v4_file_path)
+            else
+              fetch IPS_V4_URL
+            end
           end
 
           def fetch(url)
@@ -57,6 +65,11 @@ module Cloudflare
             else
               raise ResponseError, resp.response
             end
+          end
+
+          def fetch_file(file_path)
+            file = File.open(file_path)
+            file.read.split("\n").reject(&:blank?).map { |ip| IPAddr.new ip }
           end
 
           def fetch_with_cache(type)
@@ -72,6 +85,8 @@ module Cloudflare
         expires_in: 12.hours,
         timeout: 5.seconds,
         ips: [],
+        ips_v4_file_path: nil,
+        ips_v6_file_path: nil,
       }.freeze
 
       config.before_configuration do |app|
