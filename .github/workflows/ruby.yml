@@ -28,14 +28,15 @@ jobs:
     - uses: actions/cache@v1
       with:
         path: vendor/bundle
-        key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+        key: ${{ runner.os }}-gems-1-${{ hashFiles('**/Gemfile.lock') }}
         restore-keys: |
-          ${{ runner.os }}-gems-
+          ${{ runner.os }}-gems-1-
     - name: install bundler
-      run: gem install bundler:2.1.4    
+      run: gem install bundler:1.17.3
     - name: Bundle install
       run: |
         bundle config path vendor/bundle
+        gem install bundler:1.17.3
         bundle install --jobs 4 --retry 3
     - name: Appraisal install
       run: |
