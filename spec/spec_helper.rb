@@ -18,8 +18,8 @@ if ENV['RACK_ATTACK']
   require 'rack/attack'
 end
 
-require 'cloudflare/rails'
 require 'rspec/rails'
+require 'cloudflare/rails'
 require 'webmock/rspec'
 
 RSpec.configure do |config|

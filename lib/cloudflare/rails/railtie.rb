@@ -13,11 +13,14 @@ module Cloudflare
 
       Rack::Request::Helpers.prepend CheckTrustedProxies
 
-      # rack-attack Rack::Request before the above is run, so if rack-attack is loaded we need to
-      # prepend our module there as well, see:
-      # https://github.com/kickstarter/rack-attack/blob/4fc4d79c9d2697ec21263109af23f11ea93a23ce/lib/rack/attack/request.rb
-      if defined? Rack::Attack::Request
-        Rack::Attack::Request.prepend CheckTrustedProxies
+      # check the most common classes that include Rack::Request::Helpers, and
+      # explicitly prepend our module if they are already loaded.
+      %w(ActionDispatch::Request Rack::Request Rack::Attack::Request).each do |class_name|
+        next unless Object.const_defined?(class_name)
+        klass = Object.const_get(class_name)
+        next unless klass.included_modules.include?(Rack::Request::Helpers)
+
+        klass.prepend CheckTrustedProxies
       end
 
       # patch ActionDispatch::RemoteIP to use our cloudflare ips - this way
