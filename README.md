@@ -23,6 +23,16 @@ And then execute:
 
     $ bundle
 
+If you are using [rack-attack](https://github.com/rack/rack-attack), this gem will ensure that `request.remote_ip` and `request.ip` are defined correctly in `Rack::Attack::Request`, however, you *must* declare `rack-attack` in your Gemfile before `cloudflare-rails`. For example:
+
+
+```ruby
+group :production do
+  gem 'rack-attack'
+  gem 'cloudflare-rails'
+end
+```
+
 ## Problem
 
 Using Cloudflare means it's hard to identify the IP address of incoming requests since all requests are proxied through Cloudflare's infrastructure. Cloudflare provides a [CF-Connecting-IP](https://support.cloudflare.com/hc/en-us/articles/200170986-How-does-Cloudflare-handle-HTTP-Request-headers-) header which can be used to identify the originating IP address of a request. However, this header alone doesn't verify a request is legitimate. If an attacker has found the actual IP address of your server they could spoof this header and masquerade as legitimate traffic. 
