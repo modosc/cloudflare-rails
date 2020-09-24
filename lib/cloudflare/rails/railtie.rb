@@ -11,15 +11,6 @@ module Cloudflare
         end
       end
 
-      Rack::Request::Helpers.prepend CheckTrustedProxies
-
-      # rack-attack Rack::Request before the above is run, so if rack-attack is loaded we need to
-      # prepend our module there as well, see:
-      # https://github.com/kickstarter/rack-attack/blob/4fc4d79c9d2697ec21263109af23f11ea93a23ce/lib/rack/attack/request.rb
-      if defined? Rack::Attack::Request
-        Rack::Attack::Request.prepend CheckTrustedProxies
-      end
-
       # patch ActionDispatch::RemoteIP to use our cloudflare ips - this way
       # request.remote_ip is correct inside of rails
       module RemoteIpProxies
@@ -27,8 +18,6 @@ module Cloudflare
           super + ::Rails.application.config.cloudflare.ips
         end
       end
-
-      ActionDispatch::RemoteIp.prepend RemoteIpProxies
 
       class Importer
         include HTTParty
@@ -92,6 +81,18 @@ module Cloudflare
             ::Rails.logger.error "Cloudflare::Rails: Got exception: #{e} for type: #{type}"
           end
         end
+      end
+      initializer "my_railtie.configure_rails_initialization" do
+        Rack::Request::Helpers.prepend CheckTrustedProxies
+
+        ObjectSpace.each_object(Class).
+          select do |c|
+            c.included_modules.include?(Rack::Request::Helpers) &&
+            !c.included_modules.include?(CheckTrustedProxies)
+          end.
+          map { |c| c .prepend CheckTrustedProxies }
+
+        ActionDispatch::RemoteIp.prepend RemoteIpProxies
       end
     end
   end
