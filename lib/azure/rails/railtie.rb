@@ -2,7 +2,8 @@ module Azure
   module Rails
     class Railtie < ::Rails::Railtie
 
-      module RemoteIpAzure
+      # patch  patch ActionDispatch::RemoteIp
+      module RemoteIp
         def calculate_ip
           # Set by the Rack web server, this is a single value.
           remote_addr = sanitize_ips(ips_from(@req.remote_addr)).last
@@ -56,7 +57,7 @@ module Azure
         end
       end
 
-      ActionDispatch::RemoteIp.prepend RemoteIpAzure
+      ActionDispatch::RemoteIp::GetIp.prepend RemoteIp
     end
   end
 end
