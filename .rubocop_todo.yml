@@ -10,7 +10,7 @@
 # Cop supports --auto-correct.
 Layout/MultilineBlockLayout:
   Exclude:
-    - 'spec/cloudflare/rails_spec.rb'
+    - 'spec/azure/rails_spec.rb'
 
 # Offense count: 4
 # Cop supports --auto-correct.
@@ -19,7 +19,7 @@ Layout/MultilineBlockLayout:
 # SupportedStylesForEmptyBraces: space, no_space
 Layout/SpaceInsideBlockBraces:
   Exclude:
-    - 'spec/cloudflare/rails_spec.rb'
+    - 'spec/azure/rails_spec.rb'
 
 # Offense count: 4
 # Cop supports --auto-correct.
@@ -30,7 +30,7 @@ Layout/SpaceInsideBlockBraces:
 # IgnoredMethods: lambda, proc, it
 Style/BlockDelimiters:
   Exclude:
-    - 'spec/cloudflare/rails_spec.rb'
+    - 'spec/azure/rails_spec.rb'
 
 # Offense count: 6
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.

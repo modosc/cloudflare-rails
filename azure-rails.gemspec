@@ -2,17 +2,17 @@
 
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'cloudflare/rails/version'
+require 'azure/rails/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "cloudflare-rails"
-  spec.version       = Cloudflare::Rails::VERSION
+  spec.name          = "azure-rails"
+  spec.version       = Azure::Rails::VERSION
   spec.authors       = ["jonathan schatz"]
   spec.email         = ["modosc@users.noreply.github.com"]
 
-  spec.summary       = "This gem configures Rails for CloudFlare so that request.ip and request.remote_ip and work correctly."
+  spec.summary       = "This gem configures Rails for Azure so that request.ip and request.remote_ip and work correctly."
   spec.description   = ""
-  spec.homepage      = "https://github.com/modosc/cloudflare-rails"
+  spec.homepage      = "https://github.com/harled/azure-rails"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
@@ -31,7 +31,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pry-byebug"
   spec.add_development_dependency "appraisal"
 
-  spec.add_dependency "httparty"
+  spec.add_dependency "rack", ">= 2.2.0"
   spec.add_dependency "rails", ">= 5.0", "< 6.1.0"
 
   # we need Module#prepend

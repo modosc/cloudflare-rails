@@ -17,7 +17,7 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "cloudflare-rails.gemspec" }}-{{ checksum "Appraisals" }}
+          - v1-dependencies-{{ checksum "azure-rails.gemspec" }}-{{ checksum "Appraisals" }}
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
@@ -34,7 +34,7 @@ jobs:
       - save_cache:
           paths:
             - ./vendor/bundle
-          key: v1-dependencies-{{ checksum "cloudflare-rails.gemspec" }}-{{ checksum "Appraisals" }}
+          key: v1-dependencies-{{ checksum "azure-rails.gemspec" }}-{{ checksum "Appraisals" }}
 
       # run tests!
       - run:

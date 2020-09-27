@@ -1,4 +1,4 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in cloudflare-rails.gemspec
+# Specify your gem's dependencies in azure-rails.gemspec
 gemspec

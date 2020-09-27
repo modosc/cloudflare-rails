@@ -8,6 +8,7 @@ Bundler.setup
 
 require 'rubygems'
 require 'pry'
+
 # Only the parts of rails we want to use
 require "action_controller/railtie"
 require 'action_view/railtie'
@@ -18,7 +19,7 @@ if ENV['RACK_ATTACK']
   require 'rack/attack'
 end
 
-require 'cloudflare/rails'
+require 'azure/rails'
 require 'rspec/rails'
 require 'webmock/rspec'
 

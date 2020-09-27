@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe Cloudflare::Rails do
+describe Azure::Rails do
   context("%s rack-attack" % [ENV['RACK_ATTACK'] ? "with" : "without"]) do
     it 'has a version number' do
-      expect(Cloudflare::Rails::VERSION).not_to be nil
+      expect(Azure::Rails::VERSION).not_to be nil
     end
 
     describe "Railtie" do
@@ -21,7 +21,7 @@ describe Cloudflare::Rails do
         end
       end
 
-      # by default set these valid - these are the current responses from cloudflare
+      # by default set these valid - these are the current responses from azure
       let(:ips_v4_body) do
         <<~EOM
           103.21.244.0/22
@@ -66,12 +66,12 @@ describe Cloudflare::Rails do
 
         # we have to reset this every time - even though rails_app is redefined
         # for each example the config is somehow getting cached, ugh
-        rails_app.config.cloudflare.ips = []
+        rails_app.config.azure.ips = []
 
-        stub_request(:get, "https://www.cloudflare.com/ips-v4").
+        stub_request(:get, "https://www.azure.com/ips-v4").
           to_return(status: ips_v4_status, body: ips_v4_body)
 
-        stub_request(:get, "https://www.cloudflare.com/ips-v6").
+        stub_request(:get, "https://www.azure.com/ips-v6").
           to_return(status: ips_v6_status, body: ips_v6_body)
       end
 
@@ -82,14 +82,14 @@ describe Cloudflare::Rails do
 
       if ENV['RACK_ATTACK']
         it "monkey-patches rack-attack" do
-          expect(Rack::Attack::Request.included_modules).to include(Cloudflare::Rails::Railtie::CheckTrustedProxies)
+          expect(Rack::Attack::Request.included_modules).to include(Azure::Rails::Railtie::RemoteIpAzure)
         end
       end
 
       it "works with valid responses" do
         expect_any_instance_of(Logger).not_to receive(:error)
         expect { rails_app.initialize! }.not_to raise_error
-        expect(Set.new(rails_app.config.cloudflare.ips)).
+        expect(Set.new(rails_app.config.azure.ips)).
           to eq(Set.new((ips_v4_body + ips_v6_body).split("\n").map { |ip| IPAddr.new ip }))
       end
 
@@ -100,7 +100,7 @@ describe Cloudflare::Rails do
         it "doesn't prevent rails startup" do
           expect_any_instance_of(Logger).to receive(:error).twice.and_call_original
           expect { rails_app.initialize! }.not_to raise_error
-          expect(rails_app.config.cloudflare.ips).to be_blank
+          expect(rails_app.config.azure.ips).to be_blank
         end
       end
 
@@ -111,7 +111,7 @@ describe Cloudflare::Rails do
         it "doesn't prevent rails startup" do
           expect_any_instance_of(Logger).to receive(:error).once.and_call_original
           expect { rails_app.initialize! }.not_to raise_error
-          expect(rails_app.config.cloudflare.ips).to be_blank
+          expect(rails_app.config.azure.ips).to be_blank
         end
       end
 
@@ -209,28 +209,28 @@ describe Cloudflare::Rails do
               end
             end
 
-            context "with a cloudflare ip" do
+            context "with a azure ip" do
               let(:env) { cf_env }
               let(:expected_ip) { base_ip }
 
               it_behaves_like "it gets the correct ip address from rack"
             end
 
-            context "with a non-cloudflare ip" do
+            context "with a non-azure ip" do
               let(:env) { non_cf_env }
               let(:expected_ip) { non_cf_ip }
 
               it_behaves_like "it gets the correct ip address from rack"
             end
 
-            context 'with a cloudflare ip and a local proxy' do
+            context 'with a azure ip and a local proxy' do
               let(:env) { cf_proxy_env }
               let(:expected_ip) { base_ip }
 
               it_behaves_like "it gets the correct ip address from rack"
             end
 
-            context 'works with a non-cloudflare ip and a local proxy' do
+            context 'works with a non-azure ip and a local proxy' do
               let(:env) { non_cf_proxy_env }
               let(:expected_ip) { non_cf_ip }
 
@@ -254,28 +254,28 @@ describe Cloudflare::Rails do
               end
             end
 
-            context "with a cloudflare ip" do
+            context "with a azure ip" do
               let(:env) { cf_env }
               let(:expected_ip) { base_ip }
 
               it_behaves_like "it gets the correct ip address from rails"
             end
 
-            context "with a non-cloudflare ip" do
+            context "with a non-azure ip" do
               let(:env) { non_cf_env }
               let(:expected_ip) { non_cf_ip }
 
               it_behaves_like "it gets the correct ip address from rails"
             end
 
-            context 'with a cloudflare ip and a local proxy' do
+            context 'with a azure ip and a local proxy' do
               let(:env) { cf_proxy_env }
               let(:expected_ip) { base_ip }
 
               it_behaves_like "it gets the correct ip address from rails"
             end
 
-            context 'with a non-cloudflare ip and a local proxy' do
+            context 'with a non-azure ip and a local proxy' do
               let(:env) { non_cf_proxy_env }
               let(:expected_ip) { non_cf_ip }
 
