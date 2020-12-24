@@ -7,8 +7,8 @@ require 'azure/rails/version'
 Gem::Specification.new do |spec|
   spec.name          = "azure-rails"
   spec.version       = Azure::Rails::VERSION
-  spec.authors       = ["jonathan schatz"]
-  spec.email         = ["modosc@users.noreply.github.com"]
+  spec.authors       = ["chris young"]
+  spec.email         = ["krsyoung@gmail.com"]
 
   spec.summary       = "This gem configures Rails for Azure so that request.ip and request.remote_ip and work correctly."
   spec.description   = ""
@@ -32,7 +32,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "appraisal"
 
   spec.add_dependency "rack", ">= 2.2.0"
-  spec.add_dependency "rails", ">= 5.0", "< 6.1.0"
+  spec.add_dependency "rails", ">= 5.0", "< 6.2.0"
 
   # we need Module#prepend
   spec.required_ruby_version = '>= 2.0'
