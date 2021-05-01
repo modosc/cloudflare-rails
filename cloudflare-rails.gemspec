@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 2.1.2"
   spec.add_development_dependency "rake", "~> 13.0.1"
   spec.add_development_dependency "rspec_junit_formatter", "~> 0.4.1"
-  spec.add_development_dependency "rspec-rails", "~> 4.1.0"
+  spec.add_development_dependency "rspec-rails", "~> 5.0.1"
   spec.add_development_dependency "rspec", "~> 3.10.0"
   spec.add_development_dependency "rubocop-airbnb", "~> 3.0.2"
   spec.add_development_dependency "webmock", "~> 3.12.0"
@@ -32,9 +32,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "appraisal"
 
   spec.add_dependency "httparty"
-  spec.add_dependency "railties", ">= 5.0", "< 6.2.0"
-  spec.add_dependency "activesupport", ">= 5.0", "< 6.2.0"
-  spec.add_dependency "actionpack", ">= 5.0", "< 6.2.0"
+  spec.add_dependency "railties", ">= 5.2", "< 6.2.0"
+  spec.add_dependency "activesupport", ">= 5.2", "< 6.2.0"
+  spec.add_dependency "actionpack", ">= 5.2", "< 6.2.0"
 
   # we need Module#prepend
   spec.required_ruby_version = '>= 2.0'
