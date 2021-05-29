@@ -7,7 +7,7 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/ruby:2.7.0
+      - image: circleci/ruby:2.7.3
 
     working_directory: ~/repo
 
@@ -20,6 +20,11 @@ jobs:
           - v1-dependencies-{{ checksum "cloudflare-rails.gemspec" }}-{{ checksum "Appraisals" }}
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
+
+      - run:
+          name: install bundler
+          command: |
+            gem install bundler -v $(grep bundler cloudflare-rails.gemspec |awk {'print $4'}|sed 's/"//g')
 
       - run:
           name: install dependencies
