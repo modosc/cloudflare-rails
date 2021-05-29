@@ -11,5 +11,5 @@ appraise "rails-6.1" do
 end
 
 appraise "rails-7.0" do
-  gem "rails", "~> 7.0.0.alpha", github: 'rails/rails', branch: 'main', ref: "16a2463b784fd165bd3f7616b90889e1f617ac6b"
+  gem "rails", "~> 7.0.0.alpha", github: 'rails/rails', branch: 'main'
 end
