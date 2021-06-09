@@ -1,5 +1,6 @@
 require "cloudflare/rails/version"
-require "httparty"
+require 'net/http'
+require 'uri'
 
 module Cloudflare
   module Rails

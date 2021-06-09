@@ -1,5 +1,4 @@
 require "active_support/core_ext/integer/time"
-require "httparty"
 
 module Cloudflare
   module Rails
@@ -21,13 +20,23 @@ module Cloudflare
       end
 
       class Importer
-        include HTTParty
-        base_uri 'https://www.cloudflare.com'
-        follow_redirects true
-        default_options.update(verify: true)
+        # Exceptions contain the Net::HTTP
+        # response object accessible via the {#response} method.
+        class ResponseError < StandardError
+          # Returns the response of the last request
+          # @return [Net::HTTPResponse] A subclass of Net::HTTPResponse, e.g.
+          # Net::HTTPOK
+          attr_reader :response
 
-        class ResponseError < HTTParty::ResponseError; end
+          # Instantiate an instance of ResponseError with a Net::HTTPResponse object
+          # @param [Net::HTTPResponse]
+          def initialize(response)
+            @response = response
+            super(response)
+          end
+        end
 
+        BASE_URL = 'https://www.cloudflare.com'.freeze
         IPS_V4_URL = '/ips-v4'.freeze
         IPS_V6_URL = '/ips-v6'.freeze
 
@@ -41,11 +50,19 @@ module Cloudflare
           end
 
           def fetch(url)
-            resp = get url, timeout: ::Rails.application.config.cloudflare.timeout
-            if resp.success?
+            uri = URI("#{BASE_URL}#{url}")
+
+            resp = Net::HTTP.start(uri.host, uri.port,
+              use_ssl: true, read_timeout: ::Rails.application.config.cloudflare.timeout) do |http|
+              req = Net::HTTP::Get.new(uri)
+
+              http.request(req)
+            end
+
+            if resp.is_a?(Net::HTTPSuccess)
               resp.body.split("\n").reject(&:blank?).map { |ip| IPAddr.new ip }
             else
-              raise ResponseError, resp.response
+              raise ResponseError, resp
             end
           end
 
