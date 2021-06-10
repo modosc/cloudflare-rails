@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_development_dependency "bundler", "~> 2.1.2"
+  spec.add_development_dependency "bundler", ">= 2.1.2"
   spec.add_development_dependency "rake", "~> 13.0.1"
   spec.add_development_dependency "rspec_junit_formatter", "~> 0.4.1"
   spec.add_development_dependency "rspec-rails", "~> 5.0.1"
@@ -31,7 +31,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pry-byebug"
   spec.add_development_dependency "appraisal"
 
-  spec.add_dependency "httparty"
   spec.add_dependency "railties", ">= 5.2", "< 6.2.0"
   spec.add_dependency "activesupport", ">= 5.2", "< 6.2.0"
   spec.add_dependency "actionpack", ">= 5.2", "< 6.2.0"
