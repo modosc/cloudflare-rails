@@ -6,8 +6,9 @@ describe Cloudflare::Rails do
       expect(Cloudflare::Rails::VERSION).not_to be nil
     end
 
-    describe "Railtie" do
-      let(:rails_app) do
+    describe "Railtie", run_in_isolation: true do
+      # if this isn't let! then run_in_isolation: true breaks :/
+      let!(:rails_app) do
         # build a minimal rails app
         Class.new(::Rails::Application) do
           config.active_support.deprecation = :stderr

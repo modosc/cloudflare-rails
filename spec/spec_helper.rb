@@ -18,6 +18,7 @@ require "rails/test_unit/railtie"
 # matches the ordering in a rails app
 require 'rspec/rails'
 require 'webmock/rspec'
+require 'rspec/isolation'
 
 if ENV['RACK_ATTACK'] == 'first'
   # pull in rack/attack first to make sure patches work with it
