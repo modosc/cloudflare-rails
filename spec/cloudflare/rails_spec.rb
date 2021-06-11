@@ -24,20 +24,21 @@ describe Cloudflare::Rails do
       # by default set these valid - these are the current responses from cloudflare
       let(:ips_v4_body) do
         <<~EOM
+          173.245.48.0/20
           103.21.244.0/22
           103.22.200.0/22
           103.31.4.0/22
-          104.16.0.0/12
-          108.162.192.0/18
           141.101.64.0/18
-          162.158.0.0/15
-          172.64.0.0/13
-          173.245.48.0/20
-          188.114.96.0/20
+          108.162.192.0/18
           190.93.240.0/20
+          188.114.96.0/20
           197.234.240.0/22
           198.41.128.0/17
-          199.27.128.0/21
+          162.158.0.0/15
+          172.64.0.0/13
+          131.0.72.0/22
+          104.16.0.0/13
+          104.24.0.0/14
         EOM
       end
       let(:ips_v6_body) do
@@ -47,6 +48,8 @@ describe Cloudflare::Rails do
           2405:b500::/32
           2606:4700::/32
           2803:f800::/32
+          2a06:98c0::/29
+          2c0f:f248::/32
         EOM
       end
 
@@ -54,8 +57,6 @@ describe Cloudflare::Rails do
       let(:ips_v6_status) { 200 }
 
       before(:each) do
-        stub_const "RailsApp", rails_app
-
         if ENV['RACK_ATTACK']
           Rack::Attack.throttle('requests per ip', limit: 300, period: 5.minutes) do |request|
             # the request object is a Rack::Request
@@ -63,10 +64,6 @@ describe Cloudflare::Rails do
             request.ip unless request.path.start_with? '/assets/'
           end
         end
-
-        # we have to reset this every time - even though rails_app is redefined
-        # for each example the config is somehow getting cached, ugh
-        rails_app.config.cloudflare.ips = []
 
         stub_request(:get, "https://www.cloudflare.com/ips-v4").
           to_return(status: ips_v4_status, body: ips_v4_body)
