@@ -4,4 +4,8 @@ source "https://rubygems.org"
 
 gem "rails", "~> 6.1.0"
 
+group :development do
+  gem "rspec-isolation", git: "https://github.com/modosc/rspec-isolation"
+end
+
 gemspec path: "../"
