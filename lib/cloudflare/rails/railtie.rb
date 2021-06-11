@@ -52,8 +52,10 @@ module Cloudflare
           def fetch(url)
             uri = URI("#{BASE_URL}#{url}")
 
-            resp = Net::HTTP.start(uri.host, uri.port,
-              use_ssl: true, read_timeout: ::Rails.application.config.cloudflare.timeout) do |http|
+            resp = Net::HTTP.start(uri.host,
+                                   uri.port,
+                                   use_ssl: true,
+                                   read_timeout: ::Rails.application.config.cloudflare.timeout) do |http|
               req = Net::HTTP::Get.new(uri)
 
               http.request(req)
