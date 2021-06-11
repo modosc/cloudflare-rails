@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "railties", ">= 5.2", "< 7.1.0"
   spec.add_dependency "activesupport", ">= 5.2", "< 7.1.0"
-  spec.add_dependency "actionpack", ">= 5.2", "< 7.10"
+  spec.add_dependency "actionpack", ">= 5.2", "< 7.1.0"
 
   # we need Module#prepend
   spec.required_ruby_version = '>= 2.0'
