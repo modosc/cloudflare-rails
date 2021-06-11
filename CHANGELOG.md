@@ -4,8 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.1.0] - 2021-06-11
+### Breaking Changes
 - Drop support for unsupported `rails` versions (`5.0.x` and `5.1.x`)
+
+### Added
+- use Net::HTTP instead of httparty ([pr](https://github.com/modosc/cloudflare-rails/pull/44))
+- Add `rails 7.0.0.alpha` support
 
 ## [2.0.0] - 2021-02-17
 ### Breaking Changes
