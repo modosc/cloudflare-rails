@@ -92,13 +92,15 @@ module Cloudflare
       # be correctly setup. we rescue and log errors so that failures won't prevent
       # rails from booting
       config.after_initialize do |app|
-        [:ips_v4, :ips_v6].each do |type|
-          begin
-            ::Rails.application.config.cloudflare.ips += Importer.fetch_with_cache(type)
-          rescue Importer::ResponseError => e
-            ::Rails.logger.error "Cloudflare::Rails: Couldn't import #{type} blocks from CloudFlare: #{e.response}"
-          rescue StandardError => e
-            ::Rails.logger.error "Cloudflare::Rails: Got exception: #{e} for type: #{type}"
+        unless defined?(::Rails::Console)
+          [:ips_v4, :ips_v6].each do |type|
+            begin
+              ::Rails.application.config.cloudflare.ips += Importer.fetch_with_cache(type)
+            rescue Importer::ResponseError => e
+              ::Rails.logger.error "Cloudflare::Rails: Couldn't import #{type} blocks from CloudFlare: #{e.response}"
+            rescue StandardError => e
+              ::Rails.logger.error "Cloudflare::Rails: Got exception: #{e} for type: #{type}"
+            end
           end
         end
       end
