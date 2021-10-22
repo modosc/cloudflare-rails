@@ -235,6 +235,14 @@ describe Cloudflare::Rails do
 
               it_behaves_like "it gets the correct ip address from rack"
             end
+
+            context 'with an invalid ip' do
+              let(:base_ip) { "not-an-ip.test,122.175.218.25" }
+              let(:env) { cf_env }
+              let(:expected_ip) { "122.175.218.25" }
+
+              it_behaves_like "it gets the correct ip address from rack"
+            end
           end
 
           describe "##{m}", type: :controller do
@@ -277,6 +285,14 @@ describe Cloudflare::Rails do
             context 'with a non-cloudflare ip and a local proxy' do
               let(:env) { non_cf_proxy_env }
               let(:expected_ip) { non_cf_ip }
+
+              it_behaves_like "it gets the correct ip address from rails"
+            end
+
+            context 'with an invalid ip' do
+              let(:base_ip) { "not-an-ip.test,122.175.218.25" }
+              let(:env) { cf_env }
+              let(:expected_ip) { "122.175.218.25" }
 
               it_behaves_like "it gets the correct ip address from rails"
             end

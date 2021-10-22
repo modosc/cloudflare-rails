@@ -7,7 +7,13 @@ module Cloudflare
       # correct inside of rack and rails
       module CheckTrustedProxies
         def trusted_proxy?(ip)
-          ::Rails.application.config.cloudflare.ips.any? { |proxy| proxy === ip } || super
+          matching = ::Rails.application.config.cloudflare.ips.any? do |proxy|
+            begin
+              proxy === ip
+            rescue IPAddr::InvalidAddressError
+            end
+          end
+          matching || super
         end
       end
 
