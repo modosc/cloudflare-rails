@@ -78,6 +78,54 @@ describe Cloudflare::Rails do
         Rails&.cache&.clear
       end
 
+      describe 'Importer' do
+        describe '#fetch_with_cache' do
+          subject do
+            rails_app.initialize!
+            allow(::Rails.cache).to receive(:fetch)
+            ::Cloudflare::Rails::Railtie::Importer.fetch_with_cache :ipv4
+          end
+
+          shared_examples '::Rails.cache.fetch is not called' do
+            it 'works' do
+              subject
+              expect(::Rails.cache).not_to have_received(:fetch).with("cloudflare-rails:ipv4", anything)
+            end
+          end
+
+          shared_examples '::Rails.cache.fetch is called' do
+            it 'works' do
+              subject
+              expect(::Rails.cache).to have_received(:fetch).with("cloudflare-rails:ipv4", anything).at_least(1)
+            end
+          end
+
+          it_behaves_like '::Rails.cache.fetch is called'
+
+          context 'with ::Rails::Console defined' do
+            before { stub_const "::Rails::Console", true }
+
+            it_behaves_like '::Rails.cache.fetch is not called'
+          end
+
+          context "with ENV['SKIP_CLOUDFLARE_RAILS']" do
+            around do |example|
+              ClimateControl.modify(DISABLE_CLOUDFLARE_RAILS: '0') do
+                example.run
+              end
+            end
+
+            it_behaves_like '::Rails.cache.fetch is not called'
+
+            context 'and with ::Rails::Console defined' do
+              before { stub_const "::Rails::Console", true }
+
+              it_behaves_like '::Rails.cache.fetch is not called'
+            end
+          end
+        end
+      end
+
       if ENV['RACK_ATTACK']
         it "monkey-patches rack-attack" do
           rails_app.initialize!

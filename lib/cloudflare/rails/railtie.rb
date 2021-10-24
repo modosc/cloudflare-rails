@@ -55,6 +55,10 @@ module Cloudflare
             fetch IPS_V4_URL
           end
 
+          def should_skip?
+            defined?(::Rails::Console) || ENV.key?('DISABLE_CLOUDFLARE_RAILS')
+          end
+
           def fetch(url)
             uri = URI("#{BASE_URL}#{url}")
 
@@ -75,6 +79,7 @@ module Cloudflare
           end
 
           def fetch_with_cache(type)
+            return if should_skip?
             ::Rails.cache.fetch("cloudflare-rails:#{type}", expires_in: ::Rails.application.config.cloudflare.expires_in) do
               send type
             end

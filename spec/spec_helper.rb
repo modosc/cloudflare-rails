@@ -31,6 +31,8 @@ if ENV['RACK_ATTACK'] == 'last'
   require 'rack/attack'
 end
 
+require 'climate_control'
+
 RSpec.configure do |config|
   config.infer_base_class_for_anonymous_controllers = false
 end

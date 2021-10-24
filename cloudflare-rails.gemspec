@@ -30,6 +30,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rack-attack", "~> 6.5.0"
   spec.add_development_dependency "pry-byebug"
   spec.add_development_dependency "appraisal"
+  spec.add_development_dependency "climate_control"
 
   spec.add_dependency "railties", ">= 5.2", "< 7.1.0"
   spec.add_dependency "activesupport", ">= 5.2", "< 7.1.0"
