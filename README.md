@@ -40,6 +40,8 @@ config.cloudflare.expires_in = 12.hours # default value
 config.cloudflare.timeout = 5.seconds # default value
 ```
 
+`cloudflare-rails` automatically fetches IP address and stores them in your cache when your Rails app is initialized. Sometimes you may want to skip this behavior (in CI/build, for instance). To bypass it, set `DISABLE_CLOUDFLARE_RAILS` in your environment. Fetching/storing is also bypassed in `Rails::Console` sessions.
+
 ## Alternatives
 
 [actionpack-cloudflare](https://github.com/customink/actionpack-cloudflare) simpler approach using the `CF-Connecting-IP` header.
