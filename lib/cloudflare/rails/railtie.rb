@@ -43,8 +43,8 @@ module Cloudflare
         end
 
         BASE_URL = 'https://www.cloudflare.com'.freeze
-        IPS_V4_URL = '/ips-v4'.freeze
-        IPS_V6_URL = '/ips-v6'.freeze
+        IPS_V4_URL = '/ips-v4/'.freeze
+        IPS_V6_URL = '/ips-v6/'.freeze
 
         class << self
           def ips_v6

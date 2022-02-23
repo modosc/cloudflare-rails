@@ -66,10 +66,10 @@ describe Cloudflare::Rails do
           end
         end
 
-        stub_request(:get, "https://www.cloudflare.com/ips-v4").
+        stub_request(:get, "https://www.cloudflare.com/ips-v4/").
           to_return(status: ips_v4_status, body: ips_v4_body)
 
-        stub_request(:get, "https://www.cloudflare.com/ips-v6").
+        stub_request(:get, "https://www.cloudflare.com/ips-v6/").
           to_return(status: ips_v6_status, body: ips_v6_body)
       end
 
