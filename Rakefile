@@ -9,10 +9,16 @@ task :without_rack_attack do
   Rake::Task["spec"].invoke
 end
 
-task :with_rack_attack do
-  ENV['RACK_ATTACK'] = '1'
+task :with_rack_attack_first do
+  ENV['RACK_ATTACK'] = 'first'
   Rake::Task["spec"].reenable
   Rake::Task["spec"].invoke
 end
 
-task :default => [:without_rack_attack, :with_rack_attack]
+task :with_rack_attack_last do
+  ENV['RACK_ATTACK'] = 'last'
+  Rake::Task["spec"].reenable
+  Rake::Task["spec"].invoke
+end
+
+task :default => [:without_rack_attack, :with_rack_attack_first, :with_rack_attack_last]

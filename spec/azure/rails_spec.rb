@@ -1,14 +1,20 @@
 require 'spec_helper'
 
+<<<<<<< HEAD:spec/azure/rails_spec.rb
 describe Azure::Rails do
   context("%s rack-attack" % [ENV['RACK_ATTACK'] ? "with" : "without"]) do
+=======
+describe Cloudflare::Rails do
+  context("%s rack-attack %s" % [ENV['RACK_ATTACK'] ? "with" : "without", ENV['RACK_ATTACK']]) do
+>>>>>>> e0d0e0a13e3cdbddd41f2776af0d079871f867ad:spec/cloudflare/rails_spec.rb
     it 'has a version number' do
       expect(Azure::Rails::VERSION).not_to be nil
     end
 
     describe "Railtie" do
-      let(:rails_app) do
-        # build a minimal rails app
+      let!(:rails_app) do
+        ::ActiveSupport::Dependencies.autoload_once_paths = []
+        ::ActiveSupport::Dependencies.autoload_paths = []
         Class.new(::Rails::Application) do
           config.active_support.deprecation = :stderr
           config.eager_load = false
@@ -24,20 +30,21 @@ describe Azure::Rails do
       # by default set these valid - these are the current responses from azure
       let(:ips_v4_body) do
         <<~EOM
+          173.245.48.0/20
           103.21.244.0/22
           103.22.200.0/22
           103.31.4.0/22
-          104.16.0.0/12
-          108.162.192.0/18
           141.101.64.0/18
-          162.158.0.0/15
-          172.64.0.0/13
-          173.245.48.0/20
-          188.114.96.0/20
+          108.162.192.0/18
           190.93.240.0/20
+          188.114.96.0/20
           197.234.240.0/22
           198.41.128.0/17
-          199.27.128.0/21
+          162.158.0.0/15
+          172.64.0.0/13
+          131.0.72.0/22
+          104.16.0.0/13
+          104.24.0.0/14
         EOM
       end
       let(:ips_v6_body) do
@@ -47,6 +54,8 @@ describe Azure::Rails do
           2405:b500::/32
           2606:4700::/32
           2803:f800::/32
+          2a06:98c0::/29
+          2c0f:f248::/32
         EOM
       end
 
@@ -54,8 +63,6 @@ describe Azure::Rails do
       let(:ips_v6_status) { 200 }
 
       before(:each) do
-        stub_const "RailsApp", rails_app
-
         if ENV['RACK_ATTACK']
           Rack::Attack.throttle('requests per ip', limit: 300, period: 5.minutes) do |request|
             # the request object is a Rack::Request
@@ -64,11 +71,15 @@ describe Azure::Rails do
           end
         end
 
+<<<<<<< HEAD:spec/azure/rails_spec.rb
         # we have to reset this every time - even though rails_app is redefined
         # for each example the config is somehow getting cached, ugh
         rails_app.config.azure.ips = []
 
         stub_request(:get, "https://www.azure.com/ips-v4").
+=======
+        stub_request(:get, "https://www.cloudflare.com/ips-v4").
+>>>>>>> e0d0e0a13e3cdbddd41f2776af0d079871f867ad:spec/cloudflare/rails_spec.rb
           to_return(status: ips_v4_status, body: ips_v4_body)
 
         stub_request(:get, "https://www.azure.com/ips-v6").
@@ -82,14 +93,24 @@ describe Azure::Rails do
 
       if ENV['RACK_ATTACK']
         it "monkey-patches rack-attack" do
+<<<<<<< HEAD:spec/azure/rails_spec.rb
           expect(Rack::Attack::Request.included_modules).to include(Azure::Rails::Railtie::RemoteIpAzure)
+=======
+          rails_app.initialize!
+          expect(Rack::Attack::Request.included_modules).to include(Cloudflare::Rails::Railtie::CheckTrustedProxies)
+>>>>>>> e0d0e0a13e3cdbddd41f2776af0d079871f867ad:spec/cloudflare/rails_spec.rb
         end
       end
 
       it "works with valid responses" do
         expect_any_instance_of(Logger).not_to receive(:error)
+<<<<<<< HEAD:spec/azure/rails_spec.rb
         expect { rails_app.initialize! }.not_to raise_error
         expect(Set.new(rails_app.config.azure.ips)).
+=======
+        rails_app.initialize!
+        expect(Set.new(rails_app.config.cloudflare.ips)).
+>>>>>>> e0d0e0a13e3cdbddd41f2776af0d079871f867ad:spec/cloudflare/rails_spec.rb
           to eq(Set.new((ips_v4_body + ips_v6_body).split("\n").map { |ip| IPAddr.new ip }))
       end
 
@@ -99,8 +120,13 @@ describe Azure::Rails do
 
         it "doesn't prevent rails startup" do
           expect_any_instance_of(Logger).to receive(:error).twice.and_call_original
+<<<<<<< HEAD:spec/azure/rails_spec.rb
           expect { rails_app.initialize! }.not_to raise_error
           expect(rails_app.config.azure.ips).to be_blank
+=======
+          rails_app.initialize!
+          expect(rails_app.config.cloudflare.ips).to be_blank
+>>>>>>> e0d0e0a13e3cdbddd41f2776af0d079871f867ad:spec/cloudflare/rails_spec.rb
         end
       end
 
@@ -110,8 +136,13 @@ describe Azure::Rails do
 
         it "doesn't prevent rails startup" do
           expect_any_instance_of(Logger).to receive(:error).once.and_call_original
+<<<<<<< HEAD:spec/azure/rails_spec.rb
           expect { rails_app.initialize! }.not_to raise_error
           expect(rails_app.config.azure.ips).to be_blank
+=======
+          rails_app.initialize!
+          expect(rails_app.config.cloudflare.ips).to be_blank
+>>>>>>> e0d0e0a13e3cdbddd41f2776af0d079871f867ad:spec/cloudflare/rails_spec.rb
         end
       end
 
@@ -236,6 +267,14 @@ describe Azure::Rails do
 
               it_behaves_like "it gets the correct ip address from rack"
             end
+
+            context 'with an invalid ip' do
+              let(:base_ip) { "not-an-ip.test,122.175.218.25" }
+              let(:env) { cf_env }
+              let(:expected_ip) { "122.175.218.25" }
+
+              it_behaves_like "it gets the correct ip address from rack"
+            end
           end
 
           describe "##{m}", type: :controller do
@@ -278,6 +317,14 @@ describe Azure::Rails do
             context 'with a non-azure ip and a local proxy' do
               let(:env) { non_cf_proxy_env }
               let(:expected_ip) { non_cf_ip }
+
+              it_behaves_like "it gets the correct ip address from rails"
+            end
+
+            context 'with an invalid ip' do
+              let(:base_ip) { "not-an-ip.test,122.175.218.25" }
+              let(:env) { cf_env }
+              let(:expected_ip) { "122.175.218.25" }
 
               it_behaves_like "it gets the correct ip address from rails"
             end
