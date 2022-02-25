@@ -59,17 +59,12 @@ describe Cloudflare::Rails do
 
       before(:each) do
         if ENV['RACK_ATTACK']
-          Rack::Attack.throttle('requests per ip', limit: 300, period: 5.minutes) do |request|
-            # the request object is a Rack::Request
-            # https://www.rubydoc.info/gems/rack/Rack/Request
-            request.ip unless request.path.start_with? '/assets/'
-          end
         end
 
-        stub_request(:get, "https://www.cloudflare.com/ips-v4/").
+        stub_request(:get, "https://www.cloudflare.com/ips-v4").
           to_return(status: ips_v4_status, body: ips_v4_body)
 
-        stub_request(:get, "https://www.cloudflare.com/ips-v6/").
+        stub_request(:get, "https://www.cloudflare.com/ips-v6").
           to_return(status: ips_v6_status, body: ips_v6_body)
       end
 
@@ -90,6 +85,58 @@ describe Cloudflare::Rails do
         rails_app.initialize!
         expect(Set.new(rails_app.config.cloudflare.ips)).
           to eq(Set.new((ips_v4_body + ips_v6_body).split("\n").map { |ip| IPAddr.new ip }))
+      end
+
+      describe "when redirected" do
+        it "follows the redirect" do
+          stub_request(:get, "https://www.cloudflare.com/ips-v4").
+            to_return(status: 301, headers: { 'Location' => "https://www.cloudflare.com/ips-v4/" })
+
+          stub_request(:get, "https://www.cloudflare.com/ips-v4/").
+            to_return(status: 200, body: ips_v4_body)
+
+          expect_any_instance_of(Logger).to receive(:warn).
+            with('Cloudflare::Rails: Redirected to: https://www.cloudflare.com/ips-v4/').
+            and_call_original
+          rails_app.initialize!
+          expect(Set.new(rails_app.config.cloudflare.ips)).
+            to eq(Set.new((ips_v4_body + ips_v6_body).split("\n").map { |ip| IPAddr.new ip }))
+        end
+
+        it "follows a double redirect" do
+          stub_request(:get, "https://www.cloudflare.com/ips-v4").
+            to_return(status: 301, headers: { 'Location' => "https://www.cloudflare.com/ips-v4/" })
+
+          stub_request(:get, "https://www.cloudflare.com/ips-v4/").
+            to_return(status: 301, headers: { 'Location' => "https://www.cloudflare-new.com/ips-v4/" })
+
+          stub_request(:get, "https://www.cloudflare-new.com/ips-v4/").
+            to_return(status: 200, body: ips_v4_body)
+
+          expect_any_instance_of(Logger).to receive(:warn).
+            with('Cloudflare::Rails: Redirected to: https://www.cloudflare.com/ips-v4/').
+            and_call_original
+          expect_any_instance_of(Logger).to receive(:warn).
+            with('Cloudflare::Rails: Redirected to: https://www.cloudflare-new.com/ips-v4/').
+            and_call_original
+          rails_app.initialize!
+          expect(Set.new(rails_app.config.cloudflare.ips)).
+            to eq(Set.new((ips_v4_body + ips_v6_body).split("\n").map { |ip| IPAddr.new ip }))
+        end
+
+        it "errors on an infinite redirect" do
+          stub_request(:get, "https://www.cloudflare.com/ips-v4").
+            to_return(status: 301, headers: { 'Location' => "https://www.cloudflare.com/ips-v4/" })
+
+          stub_request(:get, "https://www.cloudflare.com/ips-v4/").
+            to_return(status: 301, headers: { 'Location' => "https://www.cloudflare.com/ips-v4" })
+
+          expect_any_instance_of(Logger).to receive(:warn).exactly(4).times.and_call_original
+          expect_any_instance_of(Logger).to receive(:error).once.and_call_original
+          rails_app.initialize!
+          expect(Set.new(rails_app.config.cloudflare.ips)).
+            to eq(Set.new(ips_v6_body.split("\n").map { |ip| IPAddr.new ip }))
+        end
       end
 
       describe "with unsuccessful responses" do

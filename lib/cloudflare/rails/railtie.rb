@@ -43,21 +43,20 @@ module Cloudflare
         end
 
         BASE_URL = 'https://www.cloudflare.com'.freeze
-        IPS_V4_URL = '/ips-v4/'.freeze
-        IPS_V6_URL = '/ips-v6/'.freeze
+        IPS_V4_URL = '/ips-v4'.freeze
+        IPS_V6_URL = '/ips-v6'.freeze
 
         class << self
           def ips_v6
-            fetch IPS_V6_URL
+            fetch "#{BASE_URL}#{IPS_V6_URL}"
           end
 
           def ips_v4
-            fetch IPS_V4_URL
+            fetch "#{BASE_URL}#{IPS_V4_URL}"
           end
 
-          def fetch(url)
-            uri = URI("#{BASE_URL}#{url}")
-
+          def fetch(url, limit = 4)
+            uri = URI(url)
             resp = Net::HTTP.start(uri.host,
                                    uri.port,
                                    use_ssl: true,
@@ -69,6 +68,10 @@ module Cloudflare
 
             if resp.is_a?(Net::HTTPSuccess)
               resp.body.split("\n").reject(&:blank?).map { |ip| IPAddr.new ip }
+            elsif resp.is_a?(Net::HTTPRedirection) && limit > 0
+              location = resp['location']
+              ::Rails.logger.warn "Cloudflare::Rails: Redirected to: #{location}"
+              fetch(location, limit - 1)
             else
               raise ResponseError, resp
             end
