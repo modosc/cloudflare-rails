@@ -2,4 +2,4 @@ inherit_from:
   - .rubocop_airbnb.yml
   - .rubocop_todo.yml
 AllCops:
-  TargetRubyVersion: 2.4
+  NewCops: enable
