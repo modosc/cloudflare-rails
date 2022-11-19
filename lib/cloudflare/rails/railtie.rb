@@ -61,7 +61,8 @@ module Cloudflare
             resp = Net::HTTP.start(uri.host,
                                    uri.port,
                                    use_ssl: true,
-                                   read_timeout: ::Rails.application.config.cloudflare.timeout) do |http|
+                                   read_timeout: ::Rails.application.config.cloudflare.timeout,
+                                   open_timeout: ::Rails.application.config.cloudflare.timeout) do |http|
               req = Net::HTTP::Get.new(uri)
 
               http.request(req)
