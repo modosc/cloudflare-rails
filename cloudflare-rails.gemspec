@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", ">= 2.1.2"
   spec.add_development_dependency "rake", "~> 13.0.1"
-  spec.add_development_dependency "rspec_junit_formatter", "~> 0.5.1"
+  spec.add_development_dependency "rspec_junit_formatter", "~> 0.6.0"
   spec.add_development_dependency "rspec-rails", "~> 5.0.1"
   spec.add_development_dependency "rspec", "~> 3.12.0"
   spec.add_development_dependency "rubocop-airbnb", "~> 4.0.0"
