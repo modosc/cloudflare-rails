@@ -88,7 +88,7 @@ describe Cloudflare::Rails do
       it "works with valid responses" do
         expect_any_instance_of(Logger).not_to receive(:error)
         rails_app.initialize!
-        expect(Set.new(rails_app.config.cloudflare.ips)).
+        expect(Set.new(Cloudflare::Rails::Railtie::Importer.cloudflare_ips(refresh: true))).
           to eq(Set.new((ips_v4_body + ips_v6_body).split("\n").map { |ip| IPAddr.new ip }))
       end
 
@@ -96,10 +96,10 @@ describe Cloudflare::Rails do
         let(:ips_v4_status) { 404 }
         let(:ips_v6_status) { 404 }
 
-        it "doesn't prevent rails startup" do
-          expect_any_instance_of(Logger).to receive(:error).twice.and_call_original
+        it "doesn't break but still logs the error" do
+          expect_any_instance_of(Logger).to receive(:error).once.and_call_original
           rails_app.initialize!
-          expect(rails_app.config.cloudflare.ips).to be_blank
+          expect(Cloudflare::Rails::Railtie::Importer.cloudflare_ips(refresh: true)).to be_blank
         end
       end
 
@@ -107,10 +107,10 @@ describe Cloudflare::Rails do
         let(:ips_v4_body) { "asdfasdfasdfasdfasdf" }
         let(:ips_v6_body) { "\r\n\r\n\r\n" }
 
-        it "doesn't prevent rails startup" do
+        it "doesn't break but still logs the error" do
           expect_any_instance_of(Logger).to receive(:error).once.and_call_original
           rails_app.initialize!
-          expect(rails_app.config.cloudflare.ips).to be_blank
+          expect(Cloudflare::Rails::Railtie::Importer.cloudflare_ips(refresh: true)).to be_blank
         end
       end
 

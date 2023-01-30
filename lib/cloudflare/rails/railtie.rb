@@ -7,7 +7,7 @@ module Cloudflare
       # correct inside of rack and rails
       module CheckTrustedProxies
         def trusted_proxy?(ip)
-          matching = ::Rails.application.config.cloudflare.ips.any? do |proxy|
+          matching = Importer.cloudflare_ips.any? do |proxy|
             begin
               proxy === ip
             rescue IPAddr::InvalidAddressError
@@ -21,7 +21,7 @@ module Cloudflare
       # request.remote_ip is correct inside of rails
       module RemoteIpProxies
         def proxies
-          super + ::Rails.application.config.cloudflare.ips
+          super + Importer.cloudflare_ips
         end
       end
 
@@ -79,6 +79,14 @@ module Cloudflare
               send type
             end
           end
+
+          def cloudflare_ips(refresh: false)
+            @ips = nil if refresh
+            @ips ||= (Importer.fetch_with_cache(:ips_v4) + Importer.fetch_with_cache(:ips_v6)).freeze
+          rescue StandardError => e
+            ::Rails.logger.error(e)
+            []
+          end
         end
       end
 
@@ -94,20 +102,6 @@ module Cloudflare
         app.config.cloudflare.reverse_merge! DEFAULTS
       end
 
-      # we set config.cloudflare.ips after_initialize so that our cache will
-      # be correctly setup. we rescue and log errors so that failures won't prevent
-      # rails from booting
-      config.after_initialize do |app|
-        [:ips_v4, :ips_v6].each do |type|
-          begin
-            ::Rails.application.config.cloudflare.ips += Importer.fetch_with_cache(type)
-          rescue Importer::ResponseError => e
-            ::Rails.logger.error "Cloudflare::Rails: Couldn't import #{type} blocks from CloudFlare: #{e.response}"
-          rescue StandardError => e
-            ::Rails.logger.error "Cloudflare::Rails: Got exception: #{e} for type: #{type}"
-          end
-        end
-      end
       initializer "my_railtie.configure_rails_initialization" do
         Rack::Request::Helpers.prepend CheckTrustedProxies
 
