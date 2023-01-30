@@ -7,7 +7,7 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: cimg/ruby:2.7
+      - image: cimg/ruby:3.2
 
     working_directory: ~/repo
 
@@ -17,9 +17,9 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "cloudflare-rails.gemspec" }}-{{ checksum "Appraisals" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+            - v1-dependencies-{{ checksum "cloudflare-rails.gemspec" }}-{{ checksum "Appraisals" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
 
       - run:
           name: install bundler
