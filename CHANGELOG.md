@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0] - unreleased
 - Drop support for unsupported `rails` version `5.2.x`
+- Fetch and cache IPs lazily instead of upon initialization (https://github.com/modosc/cloudflare-rails/pull/52)
 
 ## [2.4.0] - 2022-02-22
 - Add trailing slashes to reflect Cloudflare API URLs (https://github.com/modosc/cloudflare-rails/pull/53)
