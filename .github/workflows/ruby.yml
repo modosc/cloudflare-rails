@@ -37,7 +37,6 @@ jobs:
           bundle install --jobs 4 --retry 3
       - name: Appraisal pre-install
         run: |
-          bundle install --gemfile='gemfiles/rails_5.2.gemfile'
           bundle install --gemfile='gemfiles/rails_6.0.gemfile'
           bundle install --gemfile='gemfiles/rails_6.1.gemfile'
           bundle install --gemfile='gemfiles/rails_7.0.gemfile'
