@@ -146,7 +146,7 @@ describe Cloudflare::Rails do
         }
         let(:cf_custom_config_env) {{
           "HTTP_X_FORWARDED_FOR" => "#{base_ip}, #{cf_ip_from_config}",
-          'REMOTE_ADDR' => cf_ip,
+          'REMOTE_ADDR' => cf_ip_from_config,
         }
         }
         let(:non_cf_env) {{
