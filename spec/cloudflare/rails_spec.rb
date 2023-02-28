@@ -7,7 +7,9 @@ describe Cloudflare::Rails do
     end
 
     describe "Railtie" do
-      let!(:rails_app) do
+      let(:custom_cloudflare_ip) { '4.3.2.1' }
+      let(:config_cloudflare_ips) { ['4.3.2.0/24'] }
+      let(:rails_app) do
         ::ActiveSupport::Dependencies.autoload_once_paths = []
         ::ActiveSupport::Dependencies.autoload_paths = []
         Class.new(::Rails::Application) do
@@ -19,6 +21,8 @@ describe Cloudflare::Rails do
           if ENV['RACK_ATTACK']
             config.middleware.use Rack::Attack
           end
+        end.tap do |app|
+          app.config.cloudflare.ips = config_cloudflare_ips if config_cloudflare_ips
         end
       end
 
@@ -88,8 +92,23 @@ describe Cloudflare::Rails do
       it "works with valid responses" do
         expect_any_instance_of(Logger).not_to receive(:error)
         rails_app.initialize!
+
+        expected_ip_ranges_as_strings = (ips_v4_body + ips_v6_body).split("\n") + config_cloudflare_ips
         expect(Set.new(Cloudflare::Rails::Railtie::Importer.cloudflare_ips(refresh: true))).
-          to eq(Set.new((ips_v4_body + ips_v6_body).split("\n").map { |ip| IPAddr.new ip }))
+          to eq(Set.new(expected_ip_ranges_as_strings.map { |ip| IPAddr.new ip }))
+      end
+
+      describe "with no custom IPs set in the config" do
+        let(:config_cloudflare_ips) { nil }
+
+        it "still loads IPs from the API" do
+          expect_any_instance_of(Logger).not_to receive(:error)
+          rails_app.initialize!
+
+          expected_ip_ranges_as_strings = (ips_v4_body + ips_v6_body).split("\n")
+          expect(Set.new(Cloudflare::Rails::Railtie::Importer.cloudflare_ips(refresh: true))).
+            to eq(Set.new(expected_ip_ranges_as_strings.map { |ip| IPAddr.new ip }))
+        end
       end
 
       describe "with unsuccessful responses" do
@@ -119,8 +138,14 @@ describe Cloudflare::Rails do
         let(:base_ip) { "1.2.3.4" }
         let(:non_cf_ip) { "8.8.4.4" }
         let(:cf_ip) { "197.234.240.1" }
+        let(:cf_ip_from_config) { custom_cloudflare_ip }
         let(:cf_env) {{
           "HTTP_X_FORWARDED_FOR" => "#{base_ip}, #{cf_ip}",
+          'REMOTE_ADDR' => cf_ip,
+        }
+        }
+        let(:cf_custom_config_env) {{
+          "HTTP_X_FORWARDED_FOR" => "#{base_ip}, #{cf_ip_from_config}",
           'REMOTE_ADDR' => cf_ip,
         }
         }
@@ -210,6 +235,13 @@ describe Cloudflare::Rails do
 
             context "with a cloudflare ip" do
               let(:env) { cf_env }
+              let(:expected_ip) { base_ip }
+
+              it_behaves_like "it gets the correct ip address from rack"
+            end
+
+            context "with a custom cloudflare ip from hard-coded config" do
+              let(:env) { cf_custom_config_env }
               let(:expected_ip) { base_ip }
 
               it_behaves_like "it gets the correct ip address from rack"

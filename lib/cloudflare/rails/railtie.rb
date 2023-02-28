@@ -74,6 +74,12 @@ module Cloudflare
             end
           end
 
+          def custom_config_ips
+            return [] unless ::Rails.application.config.cloudflare.ips
+
+            ::Rails.application.config.cloudflare.ips.map { |ip| IPAddr.new ip }
+          end
+
           def fetch_with_cache(type)
             ::Rails.cache.fetch("cloudflare-rails:#{type}", expires_in: ::Rails.application.config.cloudflare.expires_in) do
               send type
@@ -82,7 +88,7 @@ module Cloudflare
 
           def cloudflare_ips(refresh: false)
             @ips = nil if refresh
-            @ips ||= (Importer.fetch_with_cache(:ips_v4) + Importer.fetch_with_cache(:ips_v6)).freeze
+            @ips ||= (Importer.custom_config_ips + Importer.fetch_with_cache(:ips_v4) + Importer.fetch_with_cache(:ips_v6)).freeze
           rescue StandardError => e
             ::Rails.logger.error(e)
             []
