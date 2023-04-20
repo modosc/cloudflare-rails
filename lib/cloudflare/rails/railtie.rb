@@ -8,10 +8,8 @@ module Cloudflare
       module CheckTrustedProxies
         def trusted_proxy?(ip)
           matching = Importer.cloudflare_ips.any? do |proxy|
-            begin
-              proxy === ip
-            rescue IPAddr::InvalidAddressError
-            end
+            proxy === ip
+          rescue IPAddr::InvalidAddressError
           end
           matching || super
         end
