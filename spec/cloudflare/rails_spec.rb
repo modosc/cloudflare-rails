@@ -119,26 +119,30 @@ describe Cloudflare::Rails do
         let(:base_ip) { "1.2.3.4" }
         let(:non_cf_ip) { "8.8.4.4" }
         let(:cf_ip) { "197.234.240.1" }
-        let(:cf_env) {{
-          "HTTP_X_FORWARDED_FOR" => "#{base_ip}, #{cf_ip}",
-          'REMOTE_ADDR' => cf_ip,
-        }
-        }
-        let(:non_cf_env) {{
-          "HTTP_X_FORWARDED_FOR" => "#{base_ip}, #{non_cf_ip}",
-          'REMOTE_ADDR' => non_cf_ip,
-        }
-        }
-        let(:cf_proxy_env) {{
-          "HTTP_X_FORWARDED_FOR" => "#{base_ip}, #{cf_ip}, 127.0.0.1",
-          'REMOTE_ADDR' => "127.0.0.1",
-        }
-        }
-        let(:non_cf_proxy_env) {{
-          "HTTP_X_FORWARDED_FOR" => "#{base_ip}, #{non_cf_ip}, 127.0.0.1",
-          'REMOTE_ADDR' => "127.0.0.1",
-        }
-        }
+        let(:cf_env) do
+          {
+            "HTTP_X_FORWARDED_FOR" => "#{base_ip}, #{cf_ip}",
+            'REMOTE_ADDR' => cf_ip,
+          }
+        end
+        let(:non_cf_env) do
+          {
+            "HTTP_X_FORWARDED_FOR" => "#{base_ip}, #{non_cf_ip}",
+            'REMOTE_ADDR' => non_cf_ip,
+          }
+        end
+        let(:cf_proxy_env) do
+          {
+            "HTTP_X_FORWARDED_FOR" => "#{base_ip}, #{cf_ip}, 127.0.0.1",
+            'REMOTE_ADDR' => "127.0.0.1",
+          }
+        end
+        let(:non_cf_proxy_env) do
+          {
+            "HTTP_X_FORWARDED_FOR" => "#{base_ip}, #{non_cf_ip}, 127.0.0.1",
+            'REMOTE_ADDR' => "127.0.0.1",
+          }
+        end
 
         before(:each) do
           class FooController < ActionController::Base
