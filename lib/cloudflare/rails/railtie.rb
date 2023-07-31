@@ -101,16 +101,18 @@ module Cloudflare
       end
 
       initializer "cloudflare_rails.configure_rails_initialization" do
-        Rack::Request::Helpers.prepend CheckTrustedProxies
+        if ENV.fetch('CLOUDFLARE_PROXY', 'FALSE').upcase == 'TRUE'
+          Rack::Request::Helpers.prepend CheckTrustedProxies
 
-        ObjectSpace.each_object(Class).
-          select do |c|
+          ObjectSpace.each_object(Class).
+            select do |c|
             c.included_modules.include?(Rack::Request::Helpers) &&
-            !c.included_modules.include?(CheckTrustedProxies)
+              !c.included_modules.include?(CheckTrustedProxies)
           end.
-          map { |c| c .prepend CheckTrustedProxies }
+            map { |c| c .prepend CheckTrustedProxies }
 
-        ActionDispatch::RemoteIp.prepend RemoteIpProxies
+          ActionDispatch::RemoteIp.prepend RemoteIpProxies
+        end
       end
     end
   end
