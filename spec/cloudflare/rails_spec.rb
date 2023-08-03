@@ -151,146 +151,6 @@ describe Cloudflare::Rails do
         end
       end
 
-      context 'when CLOUDFLARE_PROXY is FALSE' do
-        around :each do |example|
-          stub_request(:get, "https://www.cloudflare.com/ips-v4/").
-            to_return(status: ips_v4_status, body: ips_v4_body)
-
-          stub_request(:get, "https://www.cloudflare.com/ips-v6/").
-            to_return(status: ips_v6_status, body: ips_v6_body)
-
-          original_proxy_value = ENV.fetch('CLOUDFLARE_PROXY', nil)
-          ENV['CLOUDFLARE_PROXY'] = 'FALSE'
-          class FooController < ActionController::Base
-            def index
-              render status: 200, json: { ip: request.ip, remote_ip: request.remote_ip }
-            end
-          end
-
-          rails_app.initialize!
-          rails_app.routes.draw do
-            root to: "foo#index", format: 'json'
-          end
-
-          example.run
-
-          Rails&.cache&.clear
-
-          ENV['CLOUDFLARE_PROXY'] = original_proxy_value
-        end
-
-        # test two different ways:
-        #
-        # 1) using the ip/remote_ip methods from above
-        # 2) using a functional test with the ip/remote_ip embedded in the response
-        #    payload - this probably isn't necessary but i don't 100% understand
-        #    what the copied remote_ip code from the rails tests is actually doing.
-
-        [:ip, :remote_ip].each do |m|
-          describe "request.#{m}" do
-            subject { send(m, env) }
-
-            shared_examples "it gets the correct ip address from rack" do
-              it "works" do
-                expect(subject[0]).to eq(expected_ip)
-                if ENV['RACK_ATTACK']
-                  expect(subject.dig(1, "rack.attack.throttle_data", "requests per ip", :discriminator)).to eq("197.234.240.1")
-                end
-              end
-            end
-
-            context "with a cloudflare ip" do
-              let(:env) { cf_env }
-              let(:expected_ip) { cf_ip }
-
-              it_behaves_like "it gets the correct ip address from rack"
-            end
-
-            context "with a non-cloudflare ip" do
-              let(:env) { non_cf_env }
-              let(:expected_ip) { non_cf_ip }
-
-              it_behaves_like "it gets the correct ip address from rack"
-            end
-
-            context 'with a cloudflare ip and a local proxy' do
-              let(:env) { cf_proxy_env }
-              let(:expected_ip) { cf_ip }
-
-              it_behaves_like "it gets the correct ip address from rack"
-            end
-
-            context 'works with a non-cloudflare ip and a local proxy' do
-              let(:env) { non_cf_proxy_env }
-              let(:expected_ip) { non_cf_ip }
-
-              it_behaves_like "it gets the correct ip address from rack"
-            end
-
-            context 'with an invalid ip' do
-              let(:base_ip) { "not-an-ip.test,122.175.218.25" }
-              let(:env) { cf_env }
-              let(:expected_ip) { cf_ip }
-
-              it_behaves_like "it gets the correct ip address from rack"
-            end
-          end
-
-          describe "##{m}", type: :controller do
-            controller do
-              def index
-                render status: 200, json: { ip: request.ip, remote_ip: request.remote_ip }
-              end
-            end
-
-            shared_examples "it gets the correct ip address from rails" do
-              it "works" do
-                request.env.merge! env
-                get :index
-                expect(response).to have_http_status(:ok)
-                expect(JSON[response.body]["#{m}"]).to eq(expected_ip)
-              end
-            end
-
-            context "with a cloudflare ip" do
-              let(:env) { cf_env }
-              let(:expected_ip) { cf_ip }
-
-              it_behaves_like "it gets the correct ip address from rails"
-            end
-
-            context "with a non-cloudflare ip" do
-              let(:env) { non_cf_env }
-              let(:expected_ip) { non_cf_ip }
-
-              it_behaves_like "it gets the correct ip address from rails"
-            end
-
-            context 'with a cloudflare ip and a local proxy' do
-              let(:env) { cf_proxy_env }
-              let(:expected_ip) { cf_ip }
-
-              it_behaves_like "it gets the correct ip address from rails"
-            end
-
-            context 'with a non-cloudflare ip and a local proxy' do
-              let(:env) { non_cf_proxy_env }
-              let(:expected_ip) { non_cf_ip }
-
-              it_behaves_like "it gets the correct ip address from rails"
-            end
-
-            context 'with an invalid ip' do
-              let(:base_ip) { "not-an-ip.test,122.175.218.25" }
-              let(:env) { cf_env }
-              let(:expected_ip) { cf_ip }
-
-              it_behaves_like "it gets the correct ip address from rails"
-            end
-          end
-        end
-      end
-
       context 'when CLOUDFLARE_PROXY is TRUE' do
         around :each do |example|
           stub_request(:get, "https://www.cloudflare.com/ips-v4/").
@@ -424,6 +284,146 @@ describe Cloudflare::Rails do
               let(:base_ip) { "not-an-ip.test,122.175.218.25" }
               let(:env) { cf_env }
               let(:expected_ip) { "122.175.218.25" }
+
+              it_behaves_like "it gets the correct ip address from rails"
+            end
+          end
+        end
+      end
+
+      context 'when CLOUDFLARE_PROXY is FALSE' do
+        around :each do |example|
+          stub_request(:get, "https://www.cloudflare.com/ips-v4/").
+            to_return(status: ips_v4_status, body: ips_v4_body)
+
+          stub_request(:get, "https://www.cloudflare.com/ips-v6/").
+            to_return(status: ips_v6_status, body: ips_v6_body)
+
+          original_proxy_value = ENV.fetch('CLOUDFLARE_PROXY', nil)
+          ENV['CLOUDFLARE_PROXY'] = 'FALSE'
+          class FooController < ActionController::Base
+            def index
+              render status: 200, json: { ip: request.ip, remote_ip: request.remote_ip }
+            end
+          end
+
+          rails_app.initialize!
+          rails_app.routes.draw do
+            root to: "foo#index", format: 'json'
+          end
+
+          example.run
+
+          Rails&.cache&.clear
+
+          ENV['CLOUDFLARE_PROXY'] = original_proxy_value
+        end
+
+        # test two different ways:
+        #
+        # 1) using the ip/remote_ip methods from above
+        # 2) using a functional test with the ip/remote_ip embedded in the response
+        #    payload - this probably isn't necessary but i don't 100% understand
+        #    what the copied remote_ip code from the rails tests is actually doing.
+
+        [:ip, :remote_ip].each do |m|
+          describe "request.#{m}" do
+            subject { send(m, env) }
+
+            shared_examples "it gets the correct ip address from rack" do
+              it "works" do
+                expect(subject[0]).to eq(expected_ip)
+                if ENV['RACK_ATTACK']
+                  expect(subject.dig(1, "rack.attack.throttle_data", "requests per ip", :discriminator)).to eq("197.234.240.1")
+                end
+              end
+            end
+
+            context "with a cloudflare ip" do
+              let(:env) { cf_env }
+              let(:expected_ip) { cf_ip }
+
+              it_behaves_like "it gets the correct ip address from rack"
+            end
+
+            context "with a non-cloudflare ip" do
+              let(:env) { non_cf_env }
+              let(:expected_ip) { non_cf_ip }
+
+              it_behaves_like "it gets the correct ip address from rack"
+            end
+
+            context 'with a cloudflare ip and a local proxy' do
+              let(:env) { cf_proxy_env }
+              let(:expected_ip) { cf_ip }
+
+              it_behaves_like "it gets the correct ip address from rack"
+            end
+
+            context 'works with a non-cloudflare ip and a local proxy' do
+              let(:env) { non_cf_proxy_env }
+              let(:expected_ip) { non_cf_ip }
+
+              it_behaves_like "it gets the correct ip address from rack"
+            end
+
+            context 'with an invalid ip' do
+              let(:base_ip) { "not-an-ip.test,122.175.218.25" }
+              let(:env) { cf_env }
+              let(:expected_ip) { cf_ip }
+
+              it_behaves_like "it gets the correct ip address from rack"
+            end
+          end
+
+          describe "##{m}", type: :controller do
+            controller do
+              def index
+                render status: 200, json: { ip: request.ip, remote_ip: request.remote_ip }
+              end
+            end
+
+            shared_examples "it gets the correct ip address from rails" do
+              it "works" do
+                request.env.merge! env
+                get :index
+                expect(response).to have_http_status(:ok)
+                expect(JSON[response.body]["#{m}"]).to eq(expected_ip)
+              end
+            end
+
+            context "with a cloudflare ip" do
+              let(:env) { cf_env }
+              let(:expected_ip) { cf_ip }
+
+              it_behaves_like "it gets the correct ip address from rails"
+            end
+
+            context "with a non-cloudflare ip" do
+              let(:env) { non_cf_env }
+              let(:expected_ip) { non_cf_ip }
+
+              it_behaves_like "it gets the correct ip address from rails"
+            end
+
+            context 'with a cloudflare ip and a local proxy' do
+              let(:env) { cf_proxy_env }
+              let(:expected_ip) { cf_ip }
+
+              it_behaves_like "it gets the correct ip address from rails"
+            end
+
+            context 'with a non-cloudflare ip and a local proxy' do
+              let(:env) { non_cf_proxy_env }
+              let(:expected_ip) { non_cf_ip }
+
+              it_behaves_like "it gets the correct ip address from rails"
+            end
+
+            context 'with an invalid ip' do
+              let(:base_ip) { "not-an-ip.test,122.175.218.25" }
+              let(:env) { cf_env }
+              let(:expected_ip) { cf_ip }
 
               it_behaves_like "it gets the correct ip address from rails"
             end

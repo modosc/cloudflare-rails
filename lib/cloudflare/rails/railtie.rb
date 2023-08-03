@@ -7,11 +7,15 @@ module Cloudflare
       # correct inside of rack and rails
       module CheckTrustedProxies
         def trusted_proxy?(ip)
-          matching = Importer.cloudflare_ips.any? do |proxy|
-            proxy === ip
-          rescue IPAddr::InvalidAddressError
+          if ENV.fetch('CLOUDFLARE_PROXY', 'FALSE').upcase == 'TRUE'
+            matching = Importer.cloudflare_ips.any? do |proxy|
+              proxy === ip
+            rescue IPAddr::InvalidAddressError
+            end
+            matching || super
+          else
+            super
           end
-          matching || super
         end
       end
 
@@ -19,7 +23,11 @@ module Cloudflare
       # request.remote_ip is correct inside of rails
       module RemoteIpProxies
         def proxies
-          super + Importer.cloudflare_ips
+          if ENV.fetch('CLOUDFLARE_PROXY', 'FALSE').upcase == 'TRUE'
+            super + Importer.cloudflare_ips
+          else
+            super
+          end
         end
       end
 
@@ -101,18 +109,16 @@ module Cloudflare
       end
 
       initializer "cloudflare_rails.configure_rails_initialization" do
-        if ENV.fetch('CLOUDFLARE_PROXY', 'FALSE').upcase == 'TRUE'
-          Rack::Request::Helpers.prepend CheckTrustedProxies
+        Rack::Request::Helpers.prepend CheckTrustedProxies
 
-          ObjectSpace.each_object(Class).
-            select do |c|
-            c.included_modules.include?(Rack::Request::Helpers) &&
-              !c.included_modules.include?(CheckTrustedProxies)
-          end.
-            map { |c| c .prepend CheckTrustedProxies }
+        ObjectSpace.each_object(Class).
+          select do |c|
+          c.included_modules.include?(Rack::Request::Helpers) &&
+            !c.included_modules.include?(CheckTrustedProxies)
+        end.
+          map { |c| c .prepend CheckTrustedProxies }
 
-          ActionDispatch::RemoteIp.prepend RemoteIpProxies
-        end
+        ActionDispatch::RemoteIp.prepend RemoteIpProxies
       end
     end
   end
