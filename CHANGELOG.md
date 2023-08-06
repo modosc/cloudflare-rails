@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased]
 - Fix `appraisal` for ruby `3.x`
 - properly scope railtie initializer (https://github.com/modosc/cloudflare-rails/pull/79)
+- Drop support for unsupported `rails` version `6.0.x`
 
 ## [3.0.0] - 2023-01-30
 - Drop support for unsupported `rails` version `5.2.x`
