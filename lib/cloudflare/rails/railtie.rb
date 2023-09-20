@@ -83,7 +83,7 @@ module Cloudflare
             @ips ||= (Importer.fetch_with_cache(:ips_v4) + Importer.fetch_with_cache(:ips_v6)).freeze
           rescue StandardError => e
             ::Rails.logger.error(e)
-            []
+            ::Rails.application.config.cloudflare.ips
           end
         end
       end

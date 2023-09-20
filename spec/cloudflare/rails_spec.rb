@@ -54,6 +54,7 @@ describe Cloudflare::Rails do
         EOM
       end
 
+      let(:default_ips) { ips_v4_body.split("\n") + ips_v6_body.split("\n") }
       let(:ips_v4_status) { 200 }
       let(:ips_v6_status) { 200 }
 
@@ -101,6 +102,12 @@ describe Cloudflare::Rails do
           rails_app.initialize!
           expect(Cloudflare::Rails::Railtie::Importer.cloudflare_ips(refresh: true)).to be_blank
         end
+
+        it "returns the default configuration" do
+          rails_app.initialize!
+          ::Rails.application.config.cloudflare.ips = default_ips
+          expect(Cloudflare::Rails::Railtie::Importer.cloudflare_ips(refresh: true)).to eq(default_ips)
+        end
       end
 
       describe "with invalid bodies" do
@@ -111,6 +118,12 @@ describe Cloudflare::Rails do
           expect_any_instance_of(Logger).to receive(:error).once.and_call_original
           rails_app.initialize!
           expect(Cloudflare::Rails::Railtie::Importer.cloudflare_ips(refresh: true)).to be_blank
+        end
+
+        it "returns the default configuration" do
+          rails_app.initialize!
+          ::Rails.application.config.cloudflare.ips = default_ips
+          expect(Cloudflare::Rails::Railtie::Importer.cloudflare_ips(refresh: true)).to eq(default_ips)
         end
       end
 
