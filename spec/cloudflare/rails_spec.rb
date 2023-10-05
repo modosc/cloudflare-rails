@@ -54,7 +54,7 @@ describe Cloudflare::Rails do
         EOM
       end
 
-      let(:default_ips) { (ips_v4_body.split("\n") + ips_v6_body.split("\n")).map { |ip| IPAddr.new ip } }
+      let(:default_ips) { [IPAddr.new("173.245.48.0/20"), IPAddr.new("2400:cb00::/32")] }
       let(:ips_v4_status) { 200 }
       let(:ips_v6_status) { 200 }
 
