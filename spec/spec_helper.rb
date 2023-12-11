@@ -1,7 +1,7 @@
 # copied from https://codingdaily.wordpress.com/2011/01/14/test-a-gem-with-the-rails-3-stack/
-$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift File.expand_path('../lib', __dir__)
 
-ENV["RAILS_ENV"] ||= 'test'
+ENV['RAILS_ENV'] ||= 'test'
 
 require 'bundler/setup'
 Bundler.setup
@@ -10,9 +10,9 @@ require 'rubygems'
 require 'pry'
 
 # Only the parts of rails we want to use
-require "action_controller/railtie"
+require 'action_controller/railtie'
 require 'action_view/railtie'
-require "rails/test_unit/railtie"
+require 'rails/test_unit/railtie'
 
 # pull in rspec/rails before cloudflare/rails since that'll pull in rails which
 # matches the ordering in a rails app

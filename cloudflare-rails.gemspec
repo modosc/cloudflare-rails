@@ -1,41 +1,42 @@
-# coding: utf-8
-
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'cloudflare_rails/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "cloudflare-rails"
+  spec.name          = 'cloudflare-rails'
   spec.version       = CloudflareRails::VERSION
-  spec.authors       = ["jonathan schatz"]
-  spec.email         = ["modosc@users.noreply.github.com"]
-
-  spec.summary       = "This gem configures Rails for CloudFlare so that request.ip and request.remote_ip and work correctly."
-  spec.description   = ""
-  spec.homepage      = "https://github.com/modosc/cloudflare-rails"
-  spec.license       = "MIT"
+  spec.authors       = ['jonathan schatz']
+  spec.email         = ['modosc@users.noreply.github.com']
+  spec.summary       = 'This gem configures Rails for CloudFlare so that request.ip and request.remote_ip and work correctly.'
+  spec.description   = ''
+  spec.homepage      = 'https://github.com/modosc/cloudflare-rails'
+  spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
-  spec.bindir        = "exe"
+  spec.bindir        = 'exe'
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
-  spec.require_paths = ["lib"]
+  spec.require_paths = ['lib']
 
-  spec.add_development_dependency "bundler", ">= 2.1.2"
-  spec.add_development_dependency "rake", "~> 13.1.0"
-  spec.add_development_dependency "rspec_junit_formatter", "~> 0.6.0"
-  spec.add_development_dependency "rspec-rails", "~> 6.1.0"
-  spec.add_development_dependency "rspec", "~> 3.12.0"
-  spec.add_development_dependency "rubocop-airbnb", "~> 6.0.0"
-  spec.add_development_dependency "webmock", "~> 3.19.1"
-  spec.add_development_dependency "rack-attack", "~> 6.7.0"
-  spec.add_development_dependency "pry-byebug"
-  spec.add_development_dependency "appraisal", "~> 2.5.0"
+  spec.add_development_dependency 'appraisal', '~> 2.5.0'
+  spec.add_development_dependency 'bundler', '>= 2.1.2'
+  spec.add_development_dependency 'pry-byebug'
+  spec.add_development_dependency 'rack-attack', '~> 6.7.0'
+  spec.add_development_dependency 'rake', '~> 13.1.0'
+  spec.add_development_dependency 'rspec', '~> 3.12.0'
+  spec.add_development_dependency 'rspec_junit_formatter', '~> 0.6.0'
+  spec.add_development_dependency 'rspec-rails', '~> 6.1.0'
+  spec.add_development_dependency 'rubocop', '~> 1.58.0'
+  spec.add_development_dependency 'rubocop-performance', '~> 1.19.1'
+  spec.add_development_dependency 'rubocop-rails', '~> 2.22.2'
+  spec.add_development_dependency 'rubocop-rspec', '~> 2.25.0'
+  spec.add_development_dependency 'webmock', '~> 3.19.1'
 
-  spec.add_dependency "railties", ">= 6.1", "< 7.2.0"
-  spec.add_dependency "activesupport", ">= 6.1", "< 7.2.0"
-  spec.add_dependency "actionpack", ">= 6.1", "< 7.2.0"
-  spec.add_dependency "zeitwerk", ">= 2.5.0"
+  spec.add_dependency 'actionpack', '>= 6.1', '< 7.2.0'
+  spec.add_dependency 'activesupport', '>= 6.1', '< 7.2.0'
+  spec.add_dependency 'railties', '>= 6.1', '< 7.2.0'
+  spec.add_dependency 'zeitwerk', '>= 2.5.0'
 
-  # we need Module#prepend
-  spec.required_ruby_version = '>= 2.0'
+  # rails 6.1 lists this as the minimum
+  spec.required_ruby_version = '>= 2.5.0'
+  spec.metadata['rubygems_mfa_required'] = 'true'
 end

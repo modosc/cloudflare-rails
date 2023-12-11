@@ -36,19 +36,17 @@ module CloudflareRails
         uri = URI("#{BASE_URL}#{url}")
 
         resp = Net::HTTP.start(uri.host,
-                                uri.port,
-                                use_ssl: true,
-                                read_timeout: Rails.application.config.cloudflare.timeout) do |http|
+                               uri.port,
+                               use_ssl: true,
+                               read_timeout: Rails.application.config.cloudflare.timeout) do |http|
           req = Net::HTTP::Get.new(uri)
 
           http.request(req)
         end
 
-        if resp.is_a?(Net::HTTPSuccess)
-          resp.body.split("\n").reject(&:blank?).map { |ip| IPAddr.new ip }
-        else
-          raise ResponseError, resp
-        end
+        raise ResponseError, resp unless resp.is_a?(Net::HTTPSuccess)
+
+        resp.body.split("\n").reject(&:blank?).map { |ip| IPAddr.new ip }
       end
 
       def fetch_with_cache(type)
