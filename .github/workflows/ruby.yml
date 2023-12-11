@@ -17,7 +17,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: ruby/setup-ruby@ec02537da5712d66d4d50a0f33b7eb52773b5ed1
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2" # Not needed with a .ruby-version file
       - uses: actions/cache@v3
         with:
           path: vendor/bundle
