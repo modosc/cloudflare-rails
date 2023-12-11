@@ -1,8 +1,7 @@
-require "cloudflare_rails/version"
-require 'net/http'
-require 'uri'
+require "zeitwerk"
+loader = Zeitwerk::Loader.for_gem
+loader.setup
+loader.eager_load
 
 module CloudflareRails
 end
-
-require "cloudflare_rails/railtie"
