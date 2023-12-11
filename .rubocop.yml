@@ -1,6 +1,16 @@
 inherit_from:
-  - .rubocop_airbnb.yml
   - .rubocop_todo.yml
+require:
+  - rubocop-rails
+  - rubocop-performance
+  - rubocop-rspec
+
 AllCops:
   NewCops: enable
-  SuggestExtensions: false
+  TargetRubyVersion: 2.5
+
+Style/Documentation:
+  Enabled: false
+
+Gemspec/DevelopmentDependencies:
+  Enabled: false
