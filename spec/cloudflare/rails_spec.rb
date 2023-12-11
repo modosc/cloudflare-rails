@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe Cloudflare::Rails do
+describe CloudflareRails do
   context("%s rack-attack %s" % [ENV['RACK_ATTACK'] ? "with" : "without", ENV['RACK_ATTACK']]) do
     it 'has a version number' do
-      expect(Cloudflare::Rails::VERSION).not_to be nil
+      expect(CloudflareRails::VERSION).not_to be nil
     end
 
     describe "Railtie" do
@@ -81,14 +81,14 @@ describe Cloudflare::Rails do
       if ENV['RACK_ATTACK']
         it "monkey-patches rack-attack" do
           rails_app.initialize!
-          expect(Rack::Attack::Request.included_modules).to include(Cloudflare::Rails::Railtie::CheckTrustedProxies)
+          expect(Rack::Attack::Request.included_modules).to include(CloudflareRails::Railtie::CheckTrustedProxies)
         end
       end
 
       it "works with valid responses" do
         expect_any_instance_of(Logger).not_to receive(:error)
         rails_app.initialize!
-        expect(Set.new(Cloudflare::Rails::Railtie::Importer.cloudflare_ips(refresh: true))).
+        expect(Set.new(CloudflareRails::Railtie::Importer.cloudflare_ips(refresh: true))).
           to eq(Set.new((ips_v4_body + ips_v6_body).split("\n").map { |ip| IPAddr.new ip }))
       end
 
@@ -99,7 +99,7 @@ describe Cloudflare::Rails do
         it "doesn't break but still logs the error" do
           expect_any_instance_of(Logger).to receive(:error).once.and_call_original
           rails_app.initialize!
-          expect(Cloudflare::Rails::Railtie::Importer.cloudflare_ips(refresh: true)).to be_blank
+          expect(CloudflareRails::Railtie::Importer.cloudflare_ips(refresh: true)).to be_blank
         end
       end
 
@@ -110,7 +110,7 @@ describe Cloudflare::Rails do
         it "doesn't break but still logs the error" do
           expect_any_instance_of(Logger).to receive(:error).once.and_call_original
           rails_app.initialize!
-          expect(Cloudflare::Rails::Railtie::Importer.cloudflare_ips(refresh: true)).to be_blank
+          expect(CloudflareRails::Railtie::Importer.cloudflare_ips(refresh: true)).to be_blank
         end
       end
 

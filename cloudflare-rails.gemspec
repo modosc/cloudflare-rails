@@ -2,11 +2,11 @@
 
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'cloudflare/rails/version'
+require 'cloudflare_rails/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "cloudflare-rails"
-  spec.version       = Cloudflare::Rails::VERSION
+  spec.version       = CloudflareRails::VERSION
   spec.authors       = ["jonathan schatz"]
   spec.email         = ["modosc@users.noreply.github.com"]
 
