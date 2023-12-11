@@ -20,36 +20,19 @@ describe CloudflareRails do
         end
       end
 
-      # by default set these valid - these are the current responses from cloudflare
+      # these are the same bodies as our fallbacks _except_ we remove one entry from each.
+      # this way we can tell when we use the fallback values and whwn we're using the (mocked)
+      # return values from our http calls
       let(:ips_v4_body) do
-        <<~EOM
-          173.245.48.0/20
-          103.21.244.0/22
-          103.22.200.0/22
-          103.31.4.0/22
-          141.101.64.0/18
-          108.162.192.0/18
-          190.93.240.0/20
-          188.114.96.0/20
-          197.234.240.0/22
-          198.41.128.0/17
-          162.158.0.0/15
-          172.64.0.0/13
-          131.0.72.0/22
-          104.16.0.0/13
-          104.24.0.0/14
-        EOM
+        ips_v4 = CloudflareRails::FallbackIps::IPS_V4_BODY.dup.split("\n")
+        ips_v4.shift
+        "#{ips_v4.join("\n")}\n"
       end
+
       let(:ips_v6_body) do
-        <<~EOM
-          2400:cb00::/32
-          2405:8100::/32
-          2405:b500::/32
-          2606:4700::/32
-          2803:f800::/32
-          2a06:98c0::/29
-          2c0f:f248::/32
-        EOM
+        ips_v6 = CloudflareRails::FallbackIps::IPS_V6_BODY.dup.split("\n")
+        ips_v6.shift
+        "#{ips_v6.join("\n")}\n"
       end
 
       let(:ips_v4_status) { 200 }
@@ -83,32 +66,38 @@ describe CloudflareRails do
         end
       end
 
-      it 'works with valid responses' do
-        expect_any_instance_of(Logger).not_to receive(:error)
-        rails_app.initialize!
-        expect(Set.new(CloudflareRails::Importer.cloudflare_ips(refresh: true)))
-          .to eq(Set.new((ips_v4_body + ips_v6_body).split("\n").map { |ip| IPAddr.new ip }))
-      end
+      describe 'CloudflareRails::Importer' do
+        subject { CloudflareRails::Importer.cloudflare_ips(refresh: true) }
 
-      describe 'with unsuccessful responses' do
-        let(:ips_v4_status) { 404 }
-        let(:ips_v6_status) { 404 }
-
-        it "doesn't break but still logs the error" do
-          expect_any_instance_of(Logger).to receive(:error).once.and_call_original
+        it 'works with valid responses' do
+          expect_any_instance_of(Logger).not_to receive(:error)
           rails_app.initialize!
-          expect(CloudflareRails::Importer.cloudflare_ips(refresh: true)).to be_blank
+          expect(subject)
+            .to eq((ips_v4_body + ips_v6_body).split("\n").map { |ip| IPAddr.new ip })
         end
-      end
 
-      describe 'with invalid bodies' do
-        let(:ips_v4_body) { 'asdfasdfasdfasdfasdf' }
-        let(:ips_v6_body) { "\r\n\r\n\r\n" }
+        describe 'with unsuccessful responses' do
+          let(:ips_v4_status) { 404 }
+          let(:ips_v6_status) { 404 }
 
-        it "doesn't break but still logs the error" do
-          expect_any_instance_of(Logger).to receive(:error).once.and_call_original
-          rails_app.initialize!
-          expect(CloudflareRails::Importer.cloudflare_ips(refresh: true)).to be_blank
+          it "doesn't break, logs the error, and returns the fallback values" do
+            expect_any_instance_of(Logger).to receive(:error).once.and_call_original
+            rails_app.initialize!
+            expect(subject)
+              .to eq(CloudflareRails::FallbackIps::IPS_V4 + CloudflareRails::FallbackIps::IPS_V6)
+          end
+        end
+
+        describe 'with invalid bodies' do
+          let(:ips_v4_body) { 'asdfasdfasdfasdfasdf' }
+          let(:ips_v6_body) { "\r\n\r\n\r\n" }
+
+          it "doesn't break but still logs the error" do
+            expect_any_instance_of(Logger).to receive(:error).once.and_call_original
+            rails_app.initialize!
+            expect(subject)
+              .to eq(CloudflareRails::FallbackIps::IPS_V4 + CloudflareRails::FallbackIps::IPS_V6)
+          end
         end
       end
 
