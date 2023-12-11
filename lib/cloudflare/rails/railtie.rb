@@ -92,7 +92,6 @@ module Cloudflare
       DEFAULTS = {
         expires_in: 12.hours,
         timeout: 5.seconds,
-        ips: [],
       }.freeze
 
       config.before_configuration do |app|
