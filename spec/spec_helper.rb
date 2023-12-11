@@ -24,7 +24,7 @@ if ENV['RACK_ATTACK'] == 'first'
   require 'rack/attack'
 end
 
-require 'cloudflare/rails'
+require 'cloudflare_rails'
 
 if ENV['RACK_ATTACK'] == 'last'
   # pull in rack/attack last to make sure patches work with it

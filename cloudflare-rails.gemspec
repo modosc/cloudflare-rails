@@ -2,11 +2,11 @@
 
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'cloudflare/rails/version'
+require 'cloudflare_rails/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "cloudflare-rails"
-  spec.version       = Cloudflare::Rails::VERSION
+  spec.version       = CloudflareRails::VERSION
   spec.authors       = ["jonathan schatz"]
   spec.email         = ["modosc@users.noreply.github.com"]
 
@@ -34,6 +34,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "railties", ">= 6.1", "< 7.2.0"
   spec.add_dependency "activesupport", ">= 6.1", "< 7.2.0"
   spec.add_dependency "actionpack", ">= 6.1", "< 7.2.0"
+  spec.add_dependency "zeitwerk", ">= 2.5.0"
 
   # we need Module#prepend
   spec.required_ruby_version = '>= 2.0'
