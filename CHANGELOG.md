@@ -4,9 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## unreleased -
+## [5.0.0] - 2023-12-15
 ### Breaking Changes
 - Change namespace from `Cloudflare::Rails` to `CloudflareRails`. This avoids issues with the [cloudflare](https://github.com/socketry/cloudflare) gem as well as the global `Rails` namespace.
+- A static set of Cloudflare IP addresses will now be used as a fallback value in the case of Cloudflare API failures. These will not be stored in `Rails.cache` so each subsequent result will retry the Cloudflare calls. Once one suceeds the response will be cached and used.
 
 ### Added
 - Use `zeitwerk` to manage file loading.
