@@ -59,8 +59,8 @@ module CloudflareRails
         @ips = nil if refresh
         @ips ||= (Importer.fetch_with_cache(:ips_v4) + Importer.fetch_with_cache(:ips_v6)).freeze
       rescue StandardError => e
-        Rails.logger.error(e)
-        []
+        Rails.logger.error "cloudflare-rails: error fetching ip addresses from Cloudflare (#{e}), falling back to defaults"
+        CloudflareRails::FallbackIps::IPS_V4 + CloudflareRails::FallbackIps::IPS_V6
       end
     end
   end
