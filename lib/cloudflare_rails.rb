@@ -1,7 +1,9 @@
 require 'zeitwerk'
 loader = Zeitwerk::Loader.for_gem
+loader.ignore("#{__dir__}/cloudflare-rails.rb")
 loader.setup
-loader.eager_load
 
 module CloudflareRails
 end
+
+loader.eager_load

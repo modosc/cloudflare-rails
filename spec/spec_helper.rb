@@ -1,12 +1,6 @@
-# copied from https://codingdaily.wordpress.com/2011/01/14/test-a-gem-with-the-rails-3-stack/
-$LOAD_PATH.unshift File.expand_path('../lib', __dir__)
-
 ENV['RAILS_ENV'] ||= 'test'
 
 require 'bundler/setup'
-Bundler.setup
-
-require 'rubygems'
 require 'pry'
 
 # Only the parts of rails we want to use
@@ -24,7 +18,7 @@ if ENV['RACK_ATTACK'] == 'first'
   require 'rack/attack'
 end
 
-require 'cloudflare_rails'
+require 'cloudflare-rails'
 
 if ENV['RACK_ATTACK'] == 'last'
   # pull in rack/attack last to make sure patches work with it
