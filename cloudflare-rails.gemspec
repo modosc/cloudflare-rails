@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.12.0'
   spec.add_development_dependency 'rspec_junit_formatter', '~> 0.6.0'
   spec.add_development_dependency 'rspec-rails', '~> 6.1.0'
-  spec.add_development_dependency 'rubocop', '~> 1.60.2'
+  spec.add_development_dependency 'rubocop', '~> 1.63.0'
   spec.add_development_dependency 'rubocop-performance', '~> 1.20.2'
   spec.add_development_dependency 'rubocop-rails', '~> 2.23.1'
   spec.add_development_dependency 'rubocop-rspec', '~> 2.26.1'
