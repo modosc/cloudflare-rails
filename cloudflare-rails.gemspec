@@ -31,9 +31,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop-rspec', '~> 2.26.1'
   spec.add_development_dependency 'webmock', '~> 3.19.1'
 
-  spec.add_dependency 'actionpack', '>= 6.1', '< 7.2.0'
-  spec.add_dependency 'activesupport', '>= 6.1', '< 7.2.0'
-  spec.add_dependency 'railties', '>= 6.1', '< 7.2.0'
+  spec.add_dependency 'actionpack', '>= 6.1'
+  spec.add_dependency 'activesupport', '>= 6.1'
+  spec.add_dependency 'railties', '>= 6.1'
   spec.add_dependency 'zeitwerk', '>= 2.5.0'
 
   # rails 6.1 lists this as the minimum
