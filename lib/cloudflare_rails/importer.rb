@@ -15,7 +15,7 @@ module CloudflareRails
       # @param [Net::HTTPResponse]
       def initialize(response)
         @response = response
-        super(response)
+        super
       end
     end
 
