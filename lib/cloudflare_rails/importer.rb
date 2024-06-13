@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'net/http'
 require 'uri'
 
@@ -19,9 +21,9 @@ module CloudflareRails
       end
     end
 
-    BASE_URL = 'https://www.cloudflare.com'.freeze
-    IPS_V4_URL = '/ips-v4/'.freeze
-    IPS_V6_URL = '/ips-v6/'.freeze
+    BASE_URL = 'https://www.cloudflare.com'
+    IPS_V4_URL = '/ips-v4/'
+    IPS_V6_URL = '/ips-v6/'
 
     class << self
       def ips_v6
