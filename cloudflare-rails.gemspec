@@ -23,7 +23,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rack-attack', '~> 6.7.0'
   spec.add_development_dependency 'rake', '~> 13.2.1'
   spec.add_development_dependency 'rspec', '~> 3.13.0'
-  spec.add_development_dependency 'rspec_junit_formatter', '~> 0.6.0'
   spec.add_development_dependency 'rspec-rails', '~> 6.1.2'
   spec.add_development_dependency 'rubocop', '~> 1.64.1'
   spec.add_development_dependency 'rubocop-performance', '~> 1.21.0'

@@ -1,4 +1,2 @@
 --format d
 --color
---format RspecJunitFormatter
---out tmp/rspec/rspec-<%= File.basename ENV['BUNDLE_GEMFILE'] %><%= ENV["RACK_ATTACK"]  ? "-rack-attack-#{ENV["RACK_ATTACK"]}" : '' %>.xml
