@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [6.0.0] - 2024-06-12
+- Drop support for `rails` version `6.1` and `7.0`, new minimum version is `7.1.0` (https://github.com/modosc/cloudflare-rails/pull/142)
+- Bump minimum ruby version to `3.1.0` in preparation for `rails` version `7.2` (https://github.com/modosc/cloudflare-rails/pull/142)
+- Relax `rails` dependencies to allow for `7.2` and `8.0` (https://github.com/modosc/cloudflare-rails/pull/142)
+- Fix `Appraisals` branch for `rails` version `7.2` (https://github.com/modosc/cloudflare-rails/pull/142)
+- add `rails` version `8.0` to `Appraisals` (https://github.com/modosc/cloudflare-rails/pull/142)
 
 ## [5.0.1] - 2023-12-16
 - Fix `zeitwerk` loading issue (https://github.com/modosc/cloudflare-rails/pull/105)

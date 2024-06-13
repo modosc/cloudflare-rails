@@ -3,10 +3,12 @@ This gem correctly configures Rails for [CloudFlare](https://www.cloudflare.com)
 
 ## Rails Compatibility
 
-This gem requires `railties`, `activesupport`, and `actionpack` >= `6.1`. For older `rails` versions see the chart below:
+This gem requires `railties`, `activesupport`, and `actionpack` >= `7.1`. For older `rails` versions see the chart below:
 
 | `rails` version | `cloudflare-rails` version |
 | --------------- | -------------------------- |
+| 7.0             | 5.0.1                      |
+| 6.1             | 5.0.1                      |
 | 6.0             | 3.0.0                      |
 | 5.2             | 2.4.0                      |
 | 5.1             | 2.0.0                      |
