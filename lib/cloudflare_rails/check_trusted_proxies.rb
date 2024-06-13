@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module CloudflareRails
   # patch rack::request::helpers to use our cloudflare ips - this way request.ip is
   # correct inside of rack and rails
