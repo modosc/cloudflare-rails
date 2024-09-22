@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [6.1.0]
+- Add cloudflare? method to determine if request passed through CF (https://github.com/modosc/cloudflare-rails/pull/149)
+
 ## [6.0.0] - 2024-06-12
 - Drop support for `rails` version `6.1` and `7.0`, new minimum version is `7.1.0` (https://github.com/modosc/cloudflare-rails/pull/142)
 - Bump minimum ruby version to `3.1.0` in preparation for `rails` version `7.2` (https://github.com/modosc/cloudflare-rails/pull/142)
