@@ -1,5 +1,5 @@
 # CloudflareRails [![Gem Version](https://badge.fury.io/rb/cloudflare-rails.svg)](https://badge.fury.io/rb/cloudflare-rails)
-This gem correctly configures Rails for [CloudFlare](https://www.cloudflare.com) so that `request.remote_ip` / `request.ip` both work correctly.
+This gem correctly configures Rails for [CloudFlare](https://www.cloudflare.com) so that `request.remote_ip` / `request.ip` both work correctly. It also exposes a `#cloudflare?` method on `Rack::Request`.
 
 ## Rails Compatibility
 
@@ -14,7 +14,6 @@ This gem requires `railties`, `activesupport`, and `actionpack` >= `7.1`. For ol
 | 5.1             | 2.0.0                      |
 | 5.0             | 2.0.0                      |
 | 4.2             | 0.1.0                      |
-| -----           | -------                    |
 
 ## Installation
 
@@ -48,12 +47,30 @@ Unfortunately this does not fix `request.ip`. This method comes from the [Rack::
 
 These issues are why this gem patches both `Rack::Request::Helpers` and `ActionDispatch::RemoteIP` rather than using the built-in configuration methods.
 
+## Prerequisites
+You must have a [`cache_store`](https://guides.rubyonrails.org/caching_with_rails.html#configuration) configured in your `rails` application.
+
 ## Usage
-You can configure the HTTP `timeout` and `expires_in` cache parameters inside of your rails config:
+You can configure the HTTP `timeout` and `expires_in` cache parameters inside of your `rails` config:
 ```ruby
 config.cloudflare.expires_in = 12.hours # default value
 config.cloudflare.timeout = 5.seconds # default value
 ```
+
+## Blocking non-Cloudflare traffic
+You can use the `#cloudfront?` method from this gem to block all non-Cloudflare traffic to your application. Here's an example of doing this with [`Rack::Attack`](https://github.com/rack/rack-attack):
+```ruby
+  Rack::Attack.blocklist('CloudFlare WAF bypass') do |req|
+    !req.cloudflare?
+  end
+```
+Note that the request may optionally pass through additional trusted proxies, so it will return true for any of these scenarios:
+
+ * `REMOTE_ADDR: CloudFlare`
+ * `REMOTE_ADDR: trusted_proxy`, `X_HTTP_FORWARDED_FOR: CloudFlare`
+ * `REMOTE_ADDR: trusted_proxy`, `X_HTTP_FORWARDED_FOR: trusted_proxy2,CloudFlare,...`
+
+but it will return false if CloudFlare comes after the trusted prefix of `X-Forwarded-For`.
 
 ## Alternatives
 
