@@ -20,7 +20,7 @@ module CloudflareRails
       forwarded_for = self.forwarded_for || []
 
       # Select only the trusted prefix of REMOTE_ADDR + X_HTTP_FORWARDED_FOR
-      trusted_proxies = (remote_addresses + forwarded_for).take_while do |ip|
+      trusted_proxies = (remote_addresses + forwarded_for.reverse).take_while do |ip|
         trusted_proxy?(ip)
       end
 

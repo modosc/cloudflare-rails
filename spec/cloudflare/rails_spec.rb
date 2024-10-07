@@ -122,9 +122,14 @@ describe CloudflareRails do
                                      'HTTP_X_FORWARDED_FOR' => '10.2.2.2,197.234.240.1')).to be_cloudflare
           end
 
-          it 'returns true if the request originated from CloudFlare via one trusted proxy and one untrusted upstream IP' do
+          it 'returns true if the right-most addresses in the forwarding chain are trusted proxies and include CloudFlare' do
             expect(Rack::Request.new('REMOTE_ADDR' => '10.1.1.1',
-                                     'HTTP_X_FORWARDED_FOR' => '197.234.240.1,1.2.3.4')).to be_cloudflare
+                                     'HTTP_X_FORWARDED_FOR' => '1.2.3.4,10.2.2.2,197.234.240.1')).to be_cloudflare
+          end
+
+          it 'returns false if the request went through an untrusted IP address after Cloudflare' do
+            expect(Rack::Request.new('REMOTE_ADDR' => '10.1.1.1',
+                                     'HTTP_X_FORWARDED_FOR' => '197.234.240.1,1.2.3.4')).not_to be_cloudflare
           end
 
           it 'returns false if the request did not originate from CloudFlare' do
@@ -138,11 +143,6 @@ describe CloudflareRails do
 
           it 'returns false if the request has a trusted REMOTE_ADDR but did not originate from CloudFlare' do
             expect(Rack::Request.new('REMOTE_ADDR' => '10.1.1.1', 'HTTP_X_FORWARDED_FOR' => '1.2.3.4')).not_to be_cloudflare
-          end
-
-          it 'returns false if the request has a trusted REMOTE_ADDR and an untrusted proxy before CloudFlare' do
-            expect(Rack::Request.new('REMOTE_ADDR' => '10.1.1.1',
-                                     'HTTP_X_FORWARDED_FOR' => '1.2.3.4,197.234.240.1')).not_to be_cloudflare
           end
         end
       end
