@@ -32,6 +32,18 @@ And then execute:
 
     $ bundle
 
+### If you're using Kamal
+
+If you're using Kamal 2 for deployments, `kamal-proxy` [won't forward headers to your Rails app while using SSL]([url](https://kamal-deploy.org/docs/configuration/proxy/#forward-headers)), unless you explicitly tell it to. Without this, `cloudflare-rails` won't work in a Kamal-deployed Rails app using SSL.
+
+You need to add `forward_headers: true` to your `proxy` section, like this:
+```ruby
+proxy:
+  ssl: true
+  host: example.com
+  forward_headers: true
+```
+
 ## Problem
 
 Using Cloudflare means it's hard to identify the IP address of incoming requests since all requests are proxied through Cloudflare's infrastructure. Cloudflare provides a [CF-Connecting-IP](https://support.cloudflare.com/hc/en-us/articles/200170986-How-does-Cloudflare-handle-HTTP-Request-headers-) header which can be used to identify the originating IP address of a request. However, this header alone doesn't verify a request is legitimate. If an attacker has found the actual IP address of your server they could spoof this header and masquerade as legitimate traffic.
