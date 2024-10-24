@@ -37,7 +37,7 @@ And then execute:
 If you're using Kamal 2 for deployments, `kamal-proxy` [won't forward headers to your Rails app while using SSL]([url](https://kamal-deploy.org/docs/configuration/proxy/#forward-headers)), unless you explicitly tell it to. Without this, `cloudflare-rails` won't work in a Kamal-deployed Rails app using SSL.
 
 You need to add `forward_headers: true` to your `proxy` section, like this:
-```ruby
+```yaml
 proxy:
   ssl: true
   host: example.com
