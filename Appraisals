@@ -7,5 +7,9 @@ appraise 'rails-7.2' do
 end
 
 appraise 'rails-8.0' do
+  gem 'rails', '~> 8.0.2'
+end
+
+appraise 'rails-edge' do
   gem 'rails', github: 'rails/rails'
 end
