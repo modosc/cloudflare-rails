@@ -4,6 +4,6 @@
 
 source 'https://rubygems.org'
 
-gem 'rails', '~> 8.0.2'
+gem 'rails', github: 'rails/rails'
 
 gemspec path: '../'
