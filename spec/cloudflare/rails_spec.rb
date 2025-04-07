@@ -13,11 +13,9 @@ describe CloudflareRails do
         ActiveSupport::Dependencies.autoload_once_paths = []
         ActiveSupport::Dependencies.autoload_paths = []
         Class.new(Rails::Application) do
-          config.active_support.deprecation = :stderr
+          config.load_defaults Rails.gem_version.version.to_f
           config.eager_load = false
-          config.cache_store = :null_store
-          config.action_dispatch.return_only_media_type_on_content_type = false
-          config.secret_key_base = SecureRandom.hex
+          config.active_support.deprecation = :stderr
           config.middleware.use Rack::Attack if ENV['RACK_ATTACK']
         end
       end
