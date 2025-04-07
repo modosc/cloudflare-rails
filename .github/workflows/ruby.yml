@@ -26,18 +26,14 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ matrix.ruby }}-${{ matrix.rails }}-${{ hashFiles('**/cloudflare-rails.gemspec') }}
-          restore-keys: |
-            ${{ runner.os }}-gems-${{ matrix.ruby }}-${{ matrix.rails }}
-      - name: Bundle install
+          bundler-cache: true
+        env:
+          BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
+      - name: test
+        env:
+          BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
         run: |
-          bundle config path vendor/bundle
-          bundle install --jobs 4 --retry 3
-      - name: Appraisal install
-        run: |
-          bundle exec appraisal ${{ matrix.rails }}
-      - name: Run tests
-        run: bundle exec appraisal ${{ matrix.rails }} rake
+          bundle exec rake
   lint:
     runs-on: ubuntu-latest
     steps:
