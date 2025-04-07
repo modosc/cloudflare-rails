@@ -17,7 +17,6 @@ jobs:
     strategy:
       matrix:
         ruby: ["3.2", "3.3", "3.4"]
-        rails: ["rails-7.1", "rails-7.2", "rails-8.0", "rails-edge"]
     steps:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
@@ -26,16 +25,18 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ matrix.ruby }}-${{ matrix.rails }}-${{ hashFiles('**/cloudflare-rails.gemspec') }}
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/cloudflare-rails.gemspec') }}
           restore-keys: |
-            ${{ runner.os }}-gems-${{ matrix.ruby }}-${{ matrix.rails }}
-        env:
-          BUNDLE_GEMFILE: gemfiles/${{ matrix.rails }}.gemfile
-      - name: test
-        env:
-          BUNDLE_GEMFILE: gemfiles/${{ matrix.rails }}.gemfile
+            ${{ runner.os }}-gems-
+      - name: Bundle install
         run: |
-          bundle exec rake
+          bundle config path vendor/bundle
+          bundle install --jobs 4 --retry 3
+      - name: Appraisal install
+        run: |
+          bundle exec appraisal install
+      - name: Run tests
+        run: bundle exec appraisal rake
   lint:
     runs-on: ubuntu-latest
     steps:
