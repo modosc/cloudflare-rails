@@ -34,7 +34,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'railties', '>= 7.1.0', '< 8.1.0'
   spec.add_dependency 'zeitwerk', '>= 2.5.0'
 
-  # rails 7.2 lists this as the minimum
-  spec.required_ruby_version = '>= 3.1.0'
+  spec.required_ruby_version = '>= 3.2.0'
   spec.metadata['rubygems_mfa_required'] = 'true'
 end
