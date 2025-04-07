@@ -28,10 +28,10 @@ jobs:
           path: vendor/bundle
           bundler-cache: true
         env:
-          BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
+          BUNDLE_GEMFILE: gemfiles/${{ matrix.rails }}.gemfile
       - name: test
         env:
-          BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
+          BUNDLE_GEMFILE: gemfiles/${{ matrix.rails }}.gemfile
         run: |
           bundle exec rake
   lint:
