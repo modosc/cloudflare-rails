@@ -35,7 +35,7 @@ jobs:
           bundle install --jobs 4 --retry 3
       - name: Appraisal install
         run: |
-          bundle exec appraisal ${{ matrix.rails }} install
+          bundle exec appraisal ${{ matrix.rails }}
       - name: Run tests
         run: bundle exec appraisal ${{ matrix.rails }} rake
   lint:
