@@ -4,10 +4,11 @@ This gem correctly configures Rails for [CloudFlare](https://www.cloudflare.com)
 
 ## Rails Compatibility
 
-This gem requires `railties`, `activesupport`, and `actionpack` >= `7.1`. For older `rails` versions see the chart below:
+This gem requires `railties`, `activesupport`, and `actionpack` >= `7.2`. For older `rails` versions see the chart below:
 
 | `rails` version | `cloudflare-rails` version |
 | --------------- | -------------------------- |
+| 7.1             | 6.2.0                      |
 | 7.0             | 5.0.1                      |
 | 6.1             | 5.0.1                      |
 | 6.0             | 3.0.0                      |
@@ -34,9 +35,10 @@ And then execute:
 
 ### If you're using Kamal
 
-If you're using Kamal 2 for deployments, `kamal-proxy` [won't forward headers to your Rails app while using SSL]([url](https://kamal-deploy.org/docs/configuration/proxy/#forward-headers)), unless you explicitly tell it to. Without this, `cloudflare-rails` won't work in a Kamal-deployed Rails app using SSL.
+If you're using Kamal 2 for deployments, `kamal-proxy` [won't forward headers to your Rails app while using SSL](<[url](https://kamal-deploy.org/docs/configuration/proxy/#forward-headers)>), unless you explicitly tell it to. Without this, `cloudflare-rails` won't work in a Kamal-deployed Rails app using SSL.
 
 You need to add `forward_headers: true` to your `proxy` section, like this:
+
 ```yaml
 proxy:
   ssl: true
@@ -87,10 +89,10 @@ You can use the `#cloudflare?` method from this gem to block all non-Cloudflare 
 
 Note that the request may optionally pass through additional trusted proxies, so it will return `true` for any of these scenarios:
 
--   `REMOTE_ADDR: CloudFlare`
--   `REMOTE_ADDR: trusted_proxy`, `X_HTTP_FORWARDED_FOR: CloudFlare`
--   `REMOTE_ADDR: trusted_proxy`, `X_HTTP_FORWARDED_FOR: CloudFlare,trusted_proxy2`
--   `REMOTE_ADDR: trusted_proxy`, `X_HTTP_FORWARDED_FOR: untrusted,CloudFlare`
+- `REMOTE_ADDR: CloudFlare`
+- `REMOTE_ADDR: trusted_proxy`, `X_HTTP_FORWARDED_FOR: CloudFlare`
+- `REMOTE_ADDR: trusted_proxy`, `X_HTTP_FORWARDED_FOR: CloudFlare,trusted_proxy2`
+- `REMOTE_ADDR: trusted_proxy`, `X_HTTP_FORWARDED_FOR: untrusted,CloudFlare`
 
 but it will return `false` if CloudFlare comes to the left of an untrusted IP in `X-Forwarded-For`.
 
