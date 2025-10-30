@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop-performance', '~> 1.26.0'
   spec.add_development_dependency 'rubocop-rails', '~> 2.33.4'
   spec.add_development_dependency 'rubocop-rspec', '~> 3.7.0'
-  spec.add_development_dependency 'webmock', '~> 3.25.0'
+  spec.add_development_dependency 'webmock', '~> 3.26.1'
   spec.add_dependency 'actionpack', '>= 7.2.0', '< 8.3.0'
   spec.add_dependency 'activesupport', '>= 7.2.0', '< 8.3.0'
   spec.add_dependency 'railties', '>= 7.2.0', '< 8.3.0'
