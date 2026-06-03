@@ -16,6 +16,8 @@ describe CloudflareRails do
           config.load_defaults Rails.gem_version.version.to_f
           config.eager_load = false
           config.active_support.deprecation = :stderr
+          # a real (in-process) store so the caching specs are deterministic.
+          config.cache_store = :memory_store
           config.middleware.use Rack::Attack if ENV['RACK_ATTACK']
         end
       end
@@ -80,8 +82,11 @@ describe CloudflareRails do
           let(:ips_v4_status) { 404 }
           let(:ips_v6_status) { 404 }
 
+          # each address family is fetched independently now, so a failure is
+          # logged once per list (v4 + v6) rather than short-circuiting after
+          # the first one.
           it "doesn't break, logs the error, and returns the fallback values" do
-            expect_any_instance_of(Logger).to receive(:error).once.and_call_original
+            expect_any_instance_of(Logger).to receive(:error).twice.and_call_original
             rails_app.initialize!
             expect(subject)
               .to eq(CloudflareRails::FallbackIps::IPS_V4 + CloudflareRails::FallbackIps::IPS_V6)
@@ -93,10 +98,60 @@ describe CloudflareRails do
           let(:ips_v6_body) { "\r\n\r\n\r\n" }
 
           it "doesn't break but still logs the error" do
-            expect_any_instance_of(Logger).to receive(:error).once.and_call_original
+            expect_any_instance_of(Logger).to receive(:error).twice.and_call_original
             rails_app.initialize!
             expect(subject)
               .to eq(CloudflareRails::FallbackIps::IPS_V4 + CloudflareRails::FallbackIps::IPS_V6)
+          end
+        end
+
+        describe 'caching behaviour' do
+          before { rails_app.initialize! }
+
+          context 'with a successful fetch' do
+            it 'memoizes the result and does not hit cloudflare again on the next call' do
+              CloudflareRails::Importer.cloudflare_ips(refresh: true)
+              CloudflareRails::Importer.cloudflare_ips
+
+              expect(a_request(:get, 'https://www.cloudflare.com/ips-v4/')).to have_been_made.once
+              expect(a_request(:get, 'https://www.cloudflare.com/ips-v6/')).to have_been_made.once
+            end
+          end
+
+          context 'with a failed fetch' do
+            let(:ips_v4_status) { 404 }
+            let(:ips_v6_status) { 404 }
+
+            # the bug this guards against: previously a blocked/failing upstream was
+            # never cached, so *every* request issued a fresh (and potentially
+            # blocking) outbound call to cloudflare.com.
+            it 'caches the fallback and does not hammer cloudflare on subsequent calls' do
+              CloudflareRails::Importer.cloudflare_ips(refresh: true)
+              3.times { CloudflareRails::Importer.cloudflare_ips }
+
+              expect(a_request(:get, 'https://www.cloudflare.com/ips-v4/')).to have_been_made.once
+              expect(a_request(:get, 'https://www.cloudflare.com/ips-v6/')).to have_been_made.once
+            end
+          end
+
+          context 'when a failed fetch later recovers' do
+            let(:ips_v4_status) { 404 }
+            let(:ips_v6_status) { 404 }
+
+            before do
+              CloudflareRails::Importer.cloudflare_ips(refresh: true) # fails -> negatively cached
+              stub_request(:get, 'https://www.cloudflare.com/ips-v4/').to_return(status: 200, body: ips_v4_body)
+              stub_request(:get, 'https://www.cloudflare.com/ips-v6/').to_return(status: 200, body: ips_v6_body)
+            end
+
+            # because the fallback is not memoized, the next call after the short
+            # error ttl retries the network and picks up the recovered upstream.
+            it 'retries the network once the error ttl lapses' do
+              travel(Rails.application.config.cloudflare.error_expires_in + 1.second) do
+                expect(CloudflareRails::Importer.cloudflare_ips)
+                  .to eq((ips_v4_body + ips_v6_body).split("\n").map { |ip| IPAddr.new ip })
+              end
+            end
           end
         end
       end

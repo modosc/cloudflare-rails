@@ -70,12 +70,22 @@ You must have a [`cache_store`](https://guides.rubyonrails.org/caching_with_rail
 
 ## Usage
 
-You can configure the HTTP `timeout` and `expires_in` cache parameters inside of your `rails` config:
+You can configure the HTTP timeouts and caching parameters inside of your `rails` config:
 
 ```ruby
-config.cloudflare.expires_in = 12.hours # default value
-config.cloudflare.timeout = 5.seconds # default value
+config.cloudflare.expires_in = 12.hours # how long a successful ip list is cached
+config.cloudflare.timeout = 5.seconds # HTTP read timeout for the fetch
+config.cloudflare.open_timeout = 5.seconds # HTTP open (TCP connect) timeout for the fetch
+config.cloudflare.error_expires_in = 1.minute # how long the fallback is cached after a failed fetch before retrying
+config.cloudflare.race_condition_ttl = 10.seconds # see ActiveSupport::Cache::Store#fetch
 ```
+
+When a fetch from Cloudflare fails the gem logs the error and falls back to a
+built-in list of Cloudflare ranges. That fallback is cached for
+`error_expires_in` (rather than re-requested on every call) so a blocked or slow
+upstream can't issue an outbound request — and block a request thread up to the
+configured timeouts — on every incoming request. Once `error_expires_in` lapses
+the next call retries the network, so a transient outage recovers on its own.
 
 ## Blocking non-Cloudflare traffic
 
