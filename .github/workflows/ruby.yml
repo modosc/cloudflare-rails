@@ -16,43 +16,46 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby: ["3.2", "3.3", "3.4"]
+        ruby: ["3.3", "3.4", "4.0"]
+        rails: ["rails-7.2", "rails-8.0", "rails-8.1", "rails-edge"]
+    env:
+      MATRIX_RUBY: ${{ matrix.ruby }}
+      MATRIX_RAILS: ${{ matrix.rails }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
-      - uses: actions/cache@v3
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('**/cloudflare-rails.gemspec') }}
-          restore-keys: |
-            ${{ runner.os }}-gems-
+          bundler-cache: true
       - name: Bundle install
         run: |
-          bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
       - name: Appraisal install
         run: |
-          bundle exec appraisal install
+          bundle exec appraisal "$MATRIX_RAILS" bundle install
       - name: Run tests
-        run: bundle exec appraisal rake
+        run: |
+          bundle exec appraisal "$MATRIX_RAILS" rake spec
+
+  tests:
+    needs: test
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check matrix status
+        if: ${{ needs.test.result != 'success' }}
+        run: exit 1
+
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.4" # Not needed with a .ruby-version file
-      - uses: actions/cache@v3
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('**/cloudflare-rails.gemspec') }}
-          restore-keys: |
-            ${{ runner.os }}-gems-
+          ruby-version: "4.0" # Not needed with a .ruby-version file
+          bundler-cache: true
       - name: Bundle install
         run: |
-          bundle config path vendor/bundle
           bundle install --jobs 4 --retry 3
       - name: Rubocop
-        run: bundle exec rubocop
+        run: bundle exec rubocop --format github
