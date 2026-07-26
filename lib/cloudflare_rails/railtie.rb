@@ -18,11 +18,12 @@ module CloudflareRails
     initializer 'cloudflare_rails.configure_rails_initialization' do
       Rack::Request::Helpers.prepend CheckTrustedProxies
 
-      ObjectSpace.each_object(Class)
-                 .select do |c|
-        c.included_modules.include?(Rack::Request::Helpers) &&
-          c.included_modules.exclude?(CheckTrustedProxies)
-      end
+      ObjectSpace
+        .each_object(Class)
+        .select do |c|
+          c.included_modules.include?(Rack::Request::Helpers) &&
+            c.included_modules.exclude?(CheckTrustedProxies)
+        end
         .map { |c| c.prepend CheckTrustedProxies }
 
       ActionDispatch::RemoteIp.prepend RemoteIpProxies
