@@ -8,11 +8,14 @@ plugins:
 
 AllCops:
   NewCops: enable
-  TargetRubyVersion: 3.2
+  TargetRubyVersion: 3.3
   SuggestExtensions: false
-
-Style/Documentation:
-  Enabled: false
+  Exclude:
+    - gemfiles/**/*
+    - bin/**/*
 
 Gemspec/DevelopmentDependencies:
+  Enabled: false
+
+Style/Documentation:
   Enabled: false
