@@ -15,6 +15,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         ruby: ["3.3", "3.4", "4.0"]
         rails: ["rails-7.2", "rails-8.0", "rails-8.1", "rails-edge"]
@@ -24,6 +25,11 @@ jobs:
             "with_rack_attack_first",
             "with_rack_attack_last",
           ]
+        include:
+          - rails: "rails-edge"
+            experimental: true
+    continue-on-error: ${{ matrix.experimental == true }}
+
     env:
       MATRIX_RUBY: ${{ matrix.ruby }}
       MATRIX_RAILS: ${{ matrix.rails }}
@@ -39,6 +45,8 @@ jobs:
           path: vendor/bundle
           key: ${{ runner.os }}-gems-${{ matrix.ruby }}-${{matrix.rails}}-${{ hashFiles('**/cloudflare-rails.gemspec') }}
           restore-keys: |
+            ${{ runner.os }}-gems-${{ matrix.ruby }}-${{matrix.rails}}-
+            ${{ runner.os }}-gems-${{ matrix.ruby }}-
             ${{ runner.os }}-gems-
       - name: Bundle install
         run: |
