@@ -13,7 +13,6 @@ AllCops:
   Exclude:
     - gemfiles/**/*
     - bin/**/*
-    - vendor/**.*
 
 Gemspec/DevelopmentDependencies:
   Enabled: false
