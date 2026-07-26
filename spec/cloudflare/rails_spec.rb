@@ -16,6 +16,7 @@ describe CloudflareRails do
           config.load_defaults Rails.gem_version.version.to_f
           config.eager_load = false
           config.active_support.deprecation = :stderr
+          config.active_support.to_time_preserves_timezone = :zone if Rails.gem_version >= Gem::Version.new('8.2')
           config.middleware.use Rack::Attack if ENV['RACK_ATTACK']
         end
       end

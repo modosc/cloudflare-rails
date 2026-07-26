@@ -18,15 +18,23 @@ jobs:
       matrix:
         ruby: ["3.3", "3.4", "4.0"]
         rails: ["rails-7.2", "rails-8.0", "rails-8.1", "rails-edge"]
+        rack_attack: ["before", "after", ""]
     env:
       MATRIX_RUBY: ${{ matrix.ruby }}
       MATRIX_RAILS: ${{ matrix.rails }}
+      RACK_ATTACK: ${{ matrix.rack_attack }}
     steps:
       - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
+      - uses: actions/cache@v6
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ matrix.ruby }}-${{matrix.rails}}-${{ hashFiles('**/cloudflare-rails.gemspec') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
       - name: Bundle install
         run: |
           bundle install --jobs 4 --retry 3
@@ -54,6 +62,12 @@ jobs:
         with:
           ruby-version: "4.0" # Not needed with a .ruby-version file
           bundler-cache: true
+      - uses: actions/cache@v3
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('cloudflare-rails.gemspec') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
       - name: Bundle install
         run: |
           bundle install --jobs 4 --retry 3
