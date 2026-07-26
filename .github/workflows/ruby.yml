@@ -18,11 +18,16 @@ jobs:
       matrix:
         ruby: ["3.3", "3.4", "4.0"]
         rails: ["rails-7.2", "rails-8.0", "rails-8.1", "rails-edge"]
-        rack_attack: ["before", "after", ""]
+        rack_attack:
+          [
+            "without_rack_attack",
+            "with_rack_attack_first",
+            "with_rack_attack_last",
+          ]
     env:
       MATRIX_RUBY: ${{ matrix.ruby }}
       MATRIX_RAILS: ${{ matrix.rails }}
-      RACK_ATTACK: ${{ matrix.rack_attack }}
+      MATRIX_RACK_ATTACK: ${{ matrix.rack_attack }}
     steps:
       - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
@@ -43,7 +48,7 @@ jobs:
           bundle exec appraisal "$MATRIX_RAILS" bundle install
       - name: Run tests
         run: |
-          bundle exec appraisal "$MATRIX_RAILS" rake spec
+          bundle exec appraisal "$MATRIX_RAILS" rake "$MATRIX_RACK_ATTACK"
 
   tests:
     needs: test
