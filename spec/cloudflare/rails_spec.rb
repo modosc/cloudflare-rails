@@ -16,7 +16,18 @@ describe CloudflareRails do
           config.load_defaults Rails.gem_version.version.to_f
           config.eager_load = false
           config.active_support.deprecation = :stderr
-          config.active_support.to_time_preserves_timezone = :zone if Rails.gem_version >= Gem::Version.new('8.2')
+
+          if Rails.gem_version >= Gem::Version.new('8.2.0.alpha')
+            # inflections are frozen on application boot:
+            # https://github.com/rails/rails/pull/57922
+            # so re-running initialize! causes a frozen error. since we don't really care about inflections
+            # in these tests we can just erase the content of the initializer
+            config.before_configuration do
+              target = Rails.application.initializers.find { |init| init.name == 'active_support.freeze_inflections' }
+              target&.instance_variable_set(:@block, ->(_app) {})
+            end
+          end
+
           config.middleware.use Rack::Attack if ENV['RACK_ATTACK']
         end
       end
