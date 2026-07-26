@@ -3,7 +3,7 @@
 ENV['RAILS_ENV'] ||= 'test'
 
 require 'bundler/setup'
-require 'pry'
+require 'debug'
 
 # Only the parts of rails we want to use
 require 'action_controller/railtie'
