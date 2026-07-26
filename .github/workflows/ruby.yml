@@ -75,7 +75,7 @@ jobs:
         with:
           ruby-version: "4.0" # Not needed with a .ruby-version file
           bundler-cache: true
-      - uses: actions/cache@v3
+      - uses: actions/cache@v6
         with:
           path: vendor/bundle
           key: ${{ runner.os }}-gems-${{ hashFiles('cloudflare-rails.gemspec') }}
