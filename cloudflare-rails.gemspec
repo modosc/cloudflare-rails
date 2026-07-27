@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'bundler', '>= 2.4.18'
   spec.add_development_dependency 'debug'
   spec.add_development_dependency 'rack-attack', '~> 6.8.0'
-  spec.add_development_dependency 'rake', '~> 13.3.0'
+  spec.add_development_dependency 'rake', '~> 13.4.2'
   spec.add_development_dependency 'rspec', '~> 3.13.0'
   spec.add_development_dependency 'rspec-rails', '~> 8.0.2'
   spec.add_development_dependency 'rubocop', '~> 1.88.2'
