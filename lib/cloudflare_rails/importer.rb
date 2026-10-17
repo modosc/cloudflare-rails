@@ -64,6 +64,13 @@ module CloudflareRails
         Rails.logger.error "cloudflare-rails: error fetching ip addresses from Cloudflare (#{e}), falling back to defaults"
         CloudflareRails::FallbackIps::IPS_V4 + CloudflareRails::FallbackIps::IPS_V6
       end
+
+      # Rails' `ractorize!` serves requests from non-main Ractors, which can't
+      # set @ips or read it unless it's shareable. Resolve the list once on the
+      # main Ractor (fetched, or the fallback) and freeze it.
+      def make_shareable!
+        @ips = Ractor.make_shareable(cloudflare_ips)
+      end
     end
   end
 end

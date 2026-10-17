@@ -28,5 +28,9 @@ module CloudflareRails
 
       ActionDispatch::RemoteIp.prepend RemoteIpProxies
     end
+
+    initializer 'cloudflare_rails.ractorize' do
+      ActiveSupport.on_load(:before_ractorize) { Importer.make_shareable! }
+    end
   end
 end

@@ -111,6 +111,42 @@ describe CloudflareRails do
               .to eq(CloudflareRails::FallbackIps::IPS_V4 + CloudflareRails::FallbackIps::IPS_V6)
           end
         end
+
+        describe '.make_shareable!' do
+          let(:ips) { CloudflareRails::Importer.cloudflare_ips }
+
+          before do
+            skip 'needs Ractor' unless defined?(Ractor)
+            CloudflareRails::Importer.instance_variable_set(:@ips, nil)
+            rails_app.initialize!
+            CloudflareRails::Importer.make_shareable!
+          end
+
+          after { CloudflareRails::Importer.instance_variable_set(:@ips, nil) }
+
+          it 'memoizes the fetched ips' do
+            expect(ips).to eq((ips_v4_body + ips_v6_body).split("\n").map { |ip| IPAddr.new ip })
+            expect(a_request(:get, 'https://www.cloudflare.com/ips-v4/')).to have_been_made.once
+          end
+
+          it 'makes the fetched ips shareable' do
+            expect(Ractor.shareable?(ips)).to be(true)
+          end
+
+          describe 'with unsuccessful responses' do
+            let(:ips_v4_status) { 404 }
+            let(:ips_v6_status) { 404 }
+
+            it 'memoizes the fallback values' do
+              expect(ips).to eq(CloudflareRails::FallbackIps::IPS_V4 + CloudflareRails::FallbackIps::IPS_V6)
+              expect(a_request(:get, 'https://www.cloudflare.com/ips-v4/')).to have_been_made.once
+            end
+
+            it 'makes the fallback values shareable' do
+              expect(Ractor.shareable?(ips)).to be(true)
+            end
+          end
+        end
       end
 
       describe 'Rack::Request' do
